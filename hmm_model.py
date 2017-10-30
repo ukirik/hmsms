@@ -4,6 +4,7 @@ import copy
 import os
 import pickle
 import math
+import random
 
 
 class FragmentHMM(object):
@@ -15,7 +16,8 @@ class FragmentHMM(object):
                  charge=(2, 4),
                  alphabet='ACDEFGHIKLMNPQRSTUVWY',
                  # Adding U as a valid aa, since some human prots contain it (e.g. GPX)
-                 blank_aa=' '):
+                 blank_aa=' ',
+                 shuffle=False):
 
         # Initiate states
         n_states, c_states = window
@@ -150,6 +152,13 @@ class FragmentHMM(object):
         A = self.T[ion_type][charge]
         B = self.E[ion_type]
         l = len(seq)
+
+        """
+        Creates a mock model by shuffling the ion labels in place. This mock model can then
+        be used for establishing a basis for evaluation of predictions
+        """
+        if self.shuffle:
+            random.shuffle(ions)
 
         for ion, weight in zip(ions, weights):
             path = self.get_path(ion, l, ion_type)

@@ -137,6 +137,44 @@ def check_corr(testfiles, m, plots_g, plots_b, graph):
     return results, corr_bins
 
 
+def generateModel(mock=False, save=True):
+
+    def pool_worker(filename):
+        print(f"Processing file: {filename}")
+        with open(filename, 'r') as f:
+            partial = FragmentHMM(order=args.order, indata=f, shuffle=mock)
+            return partial
+
+    model = None
+    with ThreadPool(args.nthreads) as pool:
+
+        print("Instantiating an order {} model, "
+              "intermediate models will be created and used as needed...".format(args.order))
+
+        # for f in tqdm(files, desc='Reading training data', mininterval=10):
+        # partial_counts = pool.map(lambda f: FragmentHMM(order=args.order, indata=f), files)
+        partial_models = pool.imap_unordered(pool_worker, args.input)
+        # model = FragmentHMM.from_partials(partial_models)
+        i = 0
+        for m in partial_models:
+            logger.info(f'Starting to merge model {i}')
+            if model is None:
+                import copy
+                model = copy.deepcopy(m)
+            else:
+                model += m
+            logger.info(f'Done merging...')
+            i += 1
+
+    if save:
+        prefix = "hmm".format(model.order) if args.name is None else args.name
+        suffix = "mock" if mock else ""
+        picklefile = f"{prefix}_{model.order}_{suffix}.pickle"
+        model.serialize(args.pickle, picklefile)
+        print("Saving model {} to disk at {}".format(picklefile, args.pickle))
+
+    return model
+
 if __name__ == '__main__':
 
     file_gen = common_utils.yield_open(filenames=args.input)
@@ -148,44 +186,12 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(process)-5d %(thread)d %(message)s')
     logger = logging.getLogger()
 
-
-    def pool_worker(filename):
-        print(f"Processing file: {filename}")
-        with open(filename, 'r') as f:
-            partial = FragmentHMM(order=args.order, indata=f)
-            return partial
-
-
     if args.use_model is not None:
         picklefile = open(args.use_model, 'rb')
         model = pickle.load(picklefile)
     else:
-        model = None
-        with ThreadPool(args.nthreads) as pool:
-
-            print("Instantiating an order {} model, "
-                  "intermediate models will be created and used as needed...".format(args.order))
-
-            # for f in tqdm(files, desc='Reading training data', mininterval=10):
-            # partial_counts = pool.map(lambda f: FragmentHMM(order=args.order, indata=f), files)
-            partial_models = pool.imap_unordered(pool_worker, args.input)
-            # model = FragmentHMM.from_partials(partial_models)
-            i = 0
-            for m in partial_models:
-                logger.info(f'Starting to merge model {i}')
-                if model is None:
-                    import copy
-
-                    model = copy.deepcopy(m)
-                else:
-                    model += m
-                logger.info(f'Done merging...')
-                i += 1
-
-            prefix = "hmm".format(model.order) if args.name is None else args.name
-            picklefile = f"{prefix}_{model.order}.pickle"
-            model.serialize(args.pickle, picklefile)
-            print("Saving model {} to disk at {}".format(picklefile, args.pickle))
+        model = generateModel()
+        mock = generateModel(mock=True)
 
     if args.test_files:
         print(args.test_files)
