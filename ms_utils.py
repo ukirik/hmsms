@@ -67,6 +67,9 @@ class MPT(Enum):
 
 def getMPClass(seq, z):
     counts = collections.defaultdict(int, getAACounts(seq))
+    if isinstance(z, str):
+        z = int(z)
+
     if z > counts['R'] + counts['K'] + counts['H']:
         return MPT.MOBILE
     elif counts['K'] + counts['H'] > z - counts['R'] > 0:
