@@ -137,14 +137,14 @@ def check_corr(testfiles, m, plots_g, plots_b, graph):
     return results, corr_bins
 
 
+def pool_worker(filename):
+    print(f"Processing file: {filename}")
+    with open(filename, 'r') as f:
+        partial = FragmentHMM(order=args.order, indata=f, shuffle=mock)
+        return partial
+
+
 def generateModel(mock=False, save=True):
-
-    def pool_worker(filename):
-        print(f"Processing file: {filename}")
-        with open(filename, 'r') as f:
-            partial = FragmentHMM(order=args.order, indata=f, shuffle=mock)
-            return partial
-
     model = None
     with ThreadPool(args.nthreads) as pool:
 
@@ -174,6 +174,7 @@ def generateModel(mock=False, save=True):
         print("Saving model {} to disk at {}".format(picklefile, args.pickle))
 
     return model
+
 
 if __name__ == '__main__':
 
