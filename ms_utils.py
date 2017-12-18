@@ -1,5 +1,6 @@
 import collections
 from enum import Enum
+from pyteomics import mass
 
 aadict = {
     'A'	: 71.037114,
@@ -78,3 +79,28 @@ def getMPClass(seq, z):
         return MPT.NONMOBILE
     else:
         AssertionError('Should not happen!')
+
+def pred2Spectra(seq, ionsNprobs):
+
+    def fragSeq(seq, ion):
+        """
+        PEPTIDER, y4 --> IDER
+        HAPPIER, b3 --> HAP
+        :param seq: sequence of the precursor peptide
+        :param ion: fragment ion
+        :return: returns the subsequence corresponding to the ion
+        """
+        iontype = ion[0]
+        ionnr = int(ion[1:])
+        frag = seq[0:ionnr] if iontype == 'b' else seq[len(seq) - ionnr:]
+        assert len(frag) == ionnr
+        return frag
+
+    spectra = []
+    for ion, prob in ionsNprobs:
+        frag = fragSeq(seq, ion)
+        m = mass.fast_mass(frag, ion_type=ion[0], charge=1)
+        spectra.append((m, prob))
+
+    return tuple(spectra)
+

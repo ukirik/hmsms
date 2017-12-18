@@ -41,6 +41,7 @@ class FragmentHMM(object):
         self.E_raw = None
         self.nlines = 0
         self.finalized = False
+        self.shuffle = shuffle
 
         # Init matrices
         n_states = len(self.states)
@@ -129,9 +130,11 @@ class FragmentHMM(object):
 
                     # l cannot be used for this sanity check, since we are pooling peptides longer than max_len
                     if max(ions) >= len(seq):
-                        raise ValueError("Unexpected number of ions:\n "
-                                         + "ions: {}"
-                                         + "sequence: {}".format(ions, seq))
+                        raise AssertionError(f"Unexpected number of ions:\n ions: {ions}, sequence: {seq}")
+
+                    # Check if there are missing ions, if so, add them with intensity 0.0
+                    if len(ions) < len(seq) - 1:
+                        ions, weights = self.pad_missing_fragments(seq, ions, weights)
 
                     self.y_frac[charge, l] += float(y_frac)
                     self.counts[charge, l] += 1
@@ -147,6 +150,21 @@ class FragmentHMM(object):
         with np.errstate(divide='ignore', invalid='ignore'):
             self.y_frac /= self.counts
 
+    def pad_missing_fragments(self, seq, ions, weights):
+        """
+        Pads the ions and weights arrays with missing fragments with weight 0.0
+        """
+        # TODO check that this works as intended and not superslowly
+        temp = np.zeros(len(seq) - 1)
+        for i, w in zip(ions, weights):
+            temp[i - 1] = w
+
+        ions = list(range(1, len(seq)))
+        weights = temp.tolist()
+        assert len(ions) == len(weights)
+
+        return ions, weights
+
     def update_parameters(self, seq, ions, weights, charge, ion_type):
         pi = self.pi[ion_type][charge]
         A = self.T[ion_type][charge]
@@ -161,6 +179,10 @@ class FragmentHMM(object):
             random.shuffle(ions)
 
         for ion, weight in zip(ions, weights):
+            # avoid a bunch of zero additions
+            if np.isclose(0.0, weight, atol=1e-9):
+                continue
+
             path = self.get_path(ion, l, ion_type)
 
             for o in range(0, self.order + 1):
@@ -312,6 +334,7 @@ class FragmentHMM(object):
             ps = ion_frac * ps
         else:
             ps = ion_frac * ps / ps.sum()
+            assert (np.isclose(1.0, np.sum(ps), atol=1e-9))
 
         ions = ['%s%i' % (ion_type, ion) for ion in ions]
         return ions, ps
