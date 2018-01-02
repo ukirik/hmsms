@@ -134,9 +134,17 @@ def _pool_worker(filename, doshuffle):
         return partial
 
 
-def x_validatation(files, nslices):
+def x_validatation(files, nslices, allcombos=False):
+    """
+    :param files: list of input files
+    :param nslices: an integer denoting the number of slices to do x-validation on
+    :param allcombos: logical to denote if all possible combinations should be considered (takes long time)
+    :return: list of models used to do the predictions.
+    """
     assert isinstance(files, list)
-    assert len(files) > nslices
+
+    if isinstance(nslices, int):
+        assert len(files) > nslices
 
     from multiprocessing import Pool as ThreadPool
     from functools import partial
@@ -158,22 +166,29 @@ def x_validatation(files, nslices):
 
     with ThreadPool(args.nthreads) as pool:
         models = []
-        slices = [files[n: n+nslices] for n in range(0, len(files), nslices)]
+        #slices = [files[n: n+nslices] for n in range(0, len(files), nslices)]
 
         summary_df = None
-        n = len(files)/nslices
-        combs = itertools.combinations(len(files), n)
-        for i in range(nslices):
+        n = int(len(files)/nslices)
+        combs = itertools.combinations(range(len(files)), n)
+        loop_over = combs if allcombos else range(nslices)
+        for i, e in enumerate(loop_over):
             model = None
 
-            input_files, validation_files = partition_list(files, lambda x: True if i*n <= x < (i+1)*n else False)
+            if allcombos:
+                input_files, validation_files = partition_list(files, lambda x: x in e)
+            else:
+                input_files, validation_files = partition_list(files, lambda x: True if i*n <= x < (i+1)*n else False)
+
             # print(f"Training on {input_files}, testing on {validation_files}")
 
             partial_models = pool.imap_unordered(partial(_pool_worker, doshuffle=False), input_files)
             for m in partial_models:
                 model = copy.deepcopy(m) if model is None else model + m
 
-            models.append(model)
+            if not allcombos:
+                models.append(model)
+
             df = _validate_model(model, validation_files)
             summary = df.groupby(['charge', 'pep length']).mean(numeric_only=True)
             summary_df = summary if summary_df is None else pd.concat((summary_df, summary), axis=1)
@@ -249,4 +264,4 @@ def _validate_model(m, testfiles, alpha=200):
 
 if __name__ == '__main__':
     #vs_mock(args.model, args.mock, args.test_files)
-    xval_models = x_validatation(args.input, 5)
+    xval_models = x_validatation(args.input, 5, True)
