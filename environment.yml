@@ -1,0 +1,12 @@
+name: hmsms-env
+channels:
+- defaults
+- bioconda
+dependencies:
+- python=3.6.3
+- pip:
+  - numpy==1.13.3
+  - scipy==1.0.0
+  - pyteomics==3.4
+
+

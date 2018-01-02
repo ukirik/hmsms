@@ -7,7 +7,7 @@ class IProbs(OffsetList):
     """
     This is a utility class that provides convenient access to
     Pi-matrix, giving the initial probabilities for states.
-    TODO: Are the limitations (min/max length or charge necessary?
+    TODO: Are the limitations (min/max length or charge) necessary?
     """
     __slots__ = ["min_l", 'max_l', 'min_z', 'max_z', 'n_states', 'pcount']
 

@@ -154,9 +154,9 @@ class MyTestCase(unittest.TestCase):
                     corr = r > 0.95
 
                     self.assertAlmostEqual(sum(probs1), 1,
-                                           msg="predictions from model1 dont add up to 1: {}".format(sum(probs1)))
+                                           msg="predictions from model1 do not add up to 1: {}".format(sum(probs1)))
                     self.assertAlmostEqual(sum(probs2), 1,
-                                           msg="predictions from model2 dont add up to 1: {}".format(sum(probs2)))
+                                           msg="predictions from model2 do not add up to 1: {}".format(sum(probs2)))
                     self.assertTrue(corr, msg="Predictions are not correlated for {}+{}, "
                                               "\n M1:{} \n M2:{}".format(seq, z, probs1, probs2))
                     self.assertTrue(np.allclose(probs1, probs2), msg="Predictions are not identical for {}+{}, "

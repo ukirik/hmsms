@@ -1,4 +1,3 @@
-import sys
 import os
 import argparse
 import collections
@@ -57,6 +56,10 @@ class PSM(object):
             self.weights[ion_type].append(val_tuple[2])
 
     def addSpectra2(self, ions_n_ints, score, y_frac):
+        """
+        Stores the ion series as a list of ints rather than a list of strings
+        this is useful for decreasing memory consumption
+        """
         self.scores.append(score)
         self.y_fractions.append(y_frac)
         for ion_type, val_tuple in ions_n_ints.items():

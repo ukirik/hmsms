@@ -40,7 +40,14 @@ class OffsetList(list):
 def getNbrOfLines(files):
     import subprocess
     total = 0
-    for f in files:
+    if isinstance(files, str):
+        list_of_files = [files]
+    else:
+        list_of_files = files
+
+    assert isinstance(list_of_files, list)
+
+    for f in list_of_files:
         cmd = f"wc -l {f}"
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
         nlines = result.strip().split()[0]
