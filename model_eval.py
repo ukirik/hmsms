@@ -21,6 +21,7 @@ parser.add_argument('--mock', help='path to corresponding mock model')
 parser.add_argument('--test_files', nargs='+', help='files to check corr on ')
 parser.add_argument('-o', '--order', help='order, default = 2', default=2, type=int)
 parser.add_argument('-i', '--input', help='input_file', nargs='+')
+parser.add_argument('-x', '--nfold', help='nbr of slices for X validation', default=5, type=int)
 # parser.add_argument('--out', help='name of directory where any resultant files will be stored', default='.')
 # parser.add_argument('-n', '--name', help='name of the model')
 # parser.add_argument('-p', '--pickle', help='print/pickle location', default='hmm_models')
@@ -265,4 +266,4 @@ def _validate_model(m, testfiles, alpha=200):
 
 if __name__ == '__main__':
     #vs_mock(args.model, args.mock, args.test_files)
-    xval_models = x_validatation(args.input, 20, False)
+    xval_models = x_validatation(args.input, args.nfold, False)
