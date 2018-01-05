@@ -264,4 +264,4 @@ def _validate_model(m, testfiles, alpha=200):
 
 if __name__ == '__main__':
     #vs_mock(args.model, args.mock, args.test_files)
-    xval_models = x_validatation(args.input, 5, True)
+    xval_models = x_validatation(args.input, 5, False)
