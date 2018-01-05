@@ -148,7 +148,7 @@ def x_validatation(files, nslices, allcombos=False):
 
     from multiprocessing import Pool as ThreadPool
     from functools import partial
-    import copy
+    import copy, sys
 
     def partition_list(l, predicate, randomize=False):
         if randomize:
@@ -194,7 +194,8 @@ def x_validatation(files, nslices, allcombos=False):
             summary_df = summary if summary_df is None else pd.concat((summary_df, summary), axis=1)
             # print(summary)
 
-    print(summary_df)
+    #print(summary_df)
+    summary_df.to_csv(sys.stdout)
     return models
 
 
@@ -264,4 +265,4 @@ def _validate_model(m, testfiles, alpha=200):
 
 if __name__ == '__main__':
     #vs_mock(args.model, args.mock, args.test_files)
-    xval_models = x_validatation(args.input, 5, True)
+    xval_models = x_validatation(args.input, 20, False)
