@@ -140,7 +140,7 @@ class MyTestCase(unittest.TestCase):
             for line in testfile:
                 try:
                     tokens = line.rstrip('\r\n').split('\t')
-                    z, seq, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
+                    z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
                     if y_ints == '' or int(z) < model.min_z:
                         continue
                     y_ints = [float(i) * float(y_frac) for i in y_ints.split(' ')]

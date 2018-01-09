@@ -22,6 +22,7 @@ parser.add_argument('--test_files', nargs='+', help='files to check corr on ')
 parser.add_argument('-o', '--order', help='order, default = 2', default=2, type=int)
 parser.add_argument('-i', '--input', help='input_file', nargs='+')
 parser.add_argument('-x', '--nfold', help='nbr of slices for X validation', default=5, type=int)
+parser.add_argument('-a', '--alpha', help="alpha parameter for finalizing models", type=int, default=400)
 # parser.add_argument('--out', help='name of directory where any resultant files will be stored', default='.')
 # parser.add_argument('-n', '--name', help='name of the model')
 # parser.add_argument('-p', '--pickle', help='print/pickle location', default='hmm_models')
@@ -200,12 +201,12 @@ def x_validatation(files, nslices, allcombos=False):
     return models
 
 
-def _validate_model(m, testfiles, alpha=200):
+def _validate_model(m, testfiles):
     file_gen = common_utils.yield_open(filenames=testfiles)
     testdata = itertools.chain.from_iterable(file_gen)
     dd = {}
     np.seterr(invalid='ignore')
-    model = m.finalizeModel(alpha)
+    model = m.finalizeModel(args.alpha)
 
     bin_z = lambda x: x if int(x) < 4 else '4+'
     bin_l = lambda s: (len(s) - 7) // 5 if (len(s) - 7) // 5 < 4 else 4
