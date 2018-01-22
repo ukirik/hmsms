@@ -35,6 +35,19 @@ parser.add_argument('-t', '--nthreads', help='number of threads to use', default
 args = parser.parse_args()
 
 
+def _getbin(l):
+    if 7 <= l < 12:
+        return '7-11'
+    elif 12 <= l < 17:
+        return '12-16'
+    elif 17 <= l < 22:
+        return '17-21'
+    elif 22 <= l < 27:
+        return '22-26'
+    elif 27 <= l:
+        return '27+'
+
+
 def vs_mock(model_path, mock_path, test_files):
 
     model_pickle = model_path
@@ -56,18 +69,6 @@ def vs_mock(model_path, mock_path, test_files):
         bin_z = lambda x: x if int(x) < 4 else '4+'
         bin_l = lambda s: (len(s) - 7) // 5 if (len(s) - 7) // 5 < 4 else 4
 
-        def getbin(l):
-            if 7 <= l < 12:
-                return '7-11'
-            elif 12 <= l < 17:
-                return '12-16'
-            elif 17 <= l < 22:
-                return '17-21'
-            elif 22 <= l < 27:
-                return '22-26'
-            elif 27 <= l:
-                return '27+'
-
         counter = 0
         nlines = None
         for line in itertools.islice(testdata, nlines):
@@ -81,8 +82,7 @@ def vs_mock(model_path, mock_path, test_files):
 
                 y_ints = [float(i) for i in y_ints.split(' ')]
                 y_ions = y_ions.split(' ')
-                # b_ints = [float(i) for i in b_ints.split(' ')]
-                # b_ions = b_ions.split(' ')
+
                 ions, probs = model.calc_fragments(charge=int(z), seq=seq, ion_type='y', use_yfrac=False)
                 mockions, mockprobs = mockmodel.calc_fragments(charge=int(z), seq=seq, ion_type='y', use_yfrac=False)
 
@@ -96,14 +96,14 @@ def vs_mock(model_path, mock_path, test_files):
                 corrs = df.corr(method='pearson')
                 dd[counter] = {'seq': seq,
                                'charge': bin_z(z),
-                               'pep length': getbin(len(seq)),
+                               'pep length': _getbin(len(seq)),
                                'model': 'mock',
                                'correlation': corrs.iat[0, 1]
                                }
 
                 dd[counter + 1] = {'seq': seq,
                                    'charge': bin_z(z),
-                                   'pep length': getbin(len(seq)),
+                                   'pep length': _getbin(len(seq)),
                                    'model': 'fwd',
                                    'correlation': corrs.iat[0, 2]
                                    }
@@ -211,18 +211,6 @@ def _validate_model(m, testfiles):
     bin_z = lambda x: x if int(x) < 4 else '4+'
     bin_l = lambda s: (len(s) - 7) // 5 if (len(s) - 7) // 5 < 4 else 4
 
-    def getbin(l):
-        if 7 <= l < 12:
-            return '07-11'
-        elif 12 <= l < 17:
-            return '12-16'
-        elif 17 <= l < 22:
-            return '17-21'
-        elif 22 <= l < 27:
-            return '22-26'
-        elif 27 <= l:
-            return '27+'
-
     counter = 0
     nlines = None
     for line in itertools.islice(testdata, nlines):
@@ -249,7 +237,7 @@ def _validate_model(m, testfiles):
             corrs = df.corr(method='pearson')
             dd[counter] = {'seq': seq,
                            'charge': bin_z(z),
-                           'pep length': getbin(len(seq)),
+                           'pep length': _getbin(len(seq)),
                            'correlation': corrs.iat[0, 1]
                            }
 
