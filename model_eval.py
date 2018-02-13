@@ -246,6 +246,8 @@ def baseline(args):
 
     def _validateSpectra(data, spectra):
         prev = None
+        assert len(spectra) == 2
+
         for s in spectra:
             score, yi, yw, bi, bw, yf = data[s]
             if len(yi) < 3:
@@ -276,14 +278,13 @@ def baseline(args):
                     break
 
             print("Finished parsing spectra")
-            print("FDR= {}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
+            print("FDR={}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
             return parser
 
     import tqdm
 
     corrs = collections.defaultdict(list)
     parser = _getParser(args.data)
-    print(f'finished parsing baseline data...')
 
     t = args.spectra_threshold
     nlines = args.max_spectra if args.max_spectra > 0 else None
@@ -310,6 +311,8 @@ def baseline(args):
         corr = pepdf.corr(method='pearson')
         p = corr.iat[0, 1]
         corrs['baseline'].append(p)
+
+    print(f'finished parsing baseline data...')
 
     model_pickle = args.model
     mock_pickle = args.mock
