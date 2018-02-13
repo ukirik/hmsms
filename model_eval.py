@@ -264,9 +264,6 @@ def baseline(args):
             reader = pd.read_csv(f, delimiter='\t', iterator=True, chunksize=100000)
 
             for index, chunk in enumerate(reader):
-                if index > 100000:
-                    break
-
                 df = pd.DataFrame(chunk)
                 if not index:
                     # Creates valid column names for pandas
@@ -378,7 +375,7 @@ def baseline(args):
 
     ax = sns.boxplot(data=df, linewidth=2)
     ax.set_xticklabels(labels=xticklabs)
-    plt.savefig('/Users/ufuk/Desktop/baseline_box.pdf')
+    plt.savefig('baseline_box.pdf')
 
 
 parser = argparse.ArgumentParser(description='Scripts for evaluating HMM fragmentation predictor')
