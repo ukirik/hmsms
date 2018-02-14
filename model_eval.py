@@ -257,7 +257,7 @@ def baseline(args):
                     return False
             except Exception as e:
                 print("Unexpected number of tokens found on line!")
-                e.args += (line,)
+                e.args += (str(s),)
                 return False
 
             prev = s
