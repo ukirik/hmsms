@@ -244,12 +244,12 @@ def _validate_model(m, testfiles):
 
 def baseline(args):
 
-    def _validateSpectra(data, spectra):
+    def _validateSpectra(spectra):
         prev = None
         assert len(spectra) == 2
 
         for s in spectra:
-            score, yi, yw, bi, bw, yf = data[s]
+            score, yi, yw, bi, bw, yf = s
             if len(yi) < 3:
                 return False
             if prev == s:
@@ -257,6 +257,23 @@ def baseline(args):
 
             prev = s
         return True
+
+    def _getSpectraPair(seq, data):
+        valid_spectra = data
+        ntry = 1
+        spectra = random.sample(valid_spectra, 2)
+        while not _validateSpectra(spectra):
+            ntry += 1
+            if ntry > 5:
+                valid_spectra = [d for d in data if len(d[1]) > 3]
+                if len(valid_spectra) < 2:
+                    print(f"Not enough spectra for {seq}")
+                    return None
+
+            spectra = random.sample(range(n), 2)
+
+        return spectra
+
 
     def _getParser(infile):
         print('Processing the spectra...')
@@ -299,20 +316,12 @@ def baseline(args):
         seq = parser.psms[key].seq
 
         dd = {}
-        ntry = 1
-        spectra = random.sample(range(n), 2)
-        while not _validateSpectra(data, spectra):
-            ntry += 1
-            if ntry > 10:
-                print(f'{seq}: First try failed, trying again (n={n})')
-                lenstr = ','.join([str(len(d[1])) for d in data])
-                print(f"lengths of y intensities: {lenstr}")
-                time.sleep(1)
-
-            spectra = random.sample(range(n), 2)
+        spectra = _getSpectraPair(data)
+        if spectra is None:
+            continue
 
         for s in spectra:
-            score, yi, yw, bi, bw, yf = data[s]
+            score, yi, yw, bi, bw, yf = s
             dd[s] = {i: ii for i, ii in zip(yi, yw)}
 
         pepdf = pd.DataFrame.from_dict(dd)
