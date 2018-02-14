@@ -281,7 +281,7 @@ def baseline(args):
             print("FDR={}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
             return parser
 
-    import tqdm
+    import tqdm, time
 
     corrs = collections.defaultdict(list)
     parser = _getParser(args.data)
@@ -299,8 +299,16 @@ def baseline(args):
         seq = parser.psms[key].seq
 
         dd = {}
+        ntry = 1
         spectra = random.sample(range(n), 2)
         while not _validateSpectra(data, spectra):
+            ntry += 1
+            if ntry > 10:
+                print(f'{seq}: First try failed, trying again (n={n})')
+                lenstr = ','.join([str(len(d[1])) for d in data])
+                print(f"lengths of y intensities: {lenstr}")
+                time.sleep(1)
+
             spectra = random.sample(range(n), 2)
 
         for s in spectra:
