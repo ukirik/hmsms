@@ -320,9 +320,9 @@ def baseline(args):
         if spectra is None:
             continue
 
-        for s in spectra:
-            score, yi, yw, bi, bw, yf = s
-            dd[s] = {i: ii for i, ii in zip(yi, yw)}
+        for j in range(len(spectra)):
+            score, yi, yw, bi, bw, yf = spectra[j]
+            dd[j] = {i: ii for i, ii in zip(yi, yw)}
 
         pepdf = pd.DataFrame.from_dict(dd)
         pepdf.fillna(0, inplace=True)
