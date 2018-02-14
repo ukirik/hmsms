@@ -291,8 +291,9 @@ def baseline(args):
     print(f'{len(baseline_spectra)} peptides have more than {t} spectra')
 
     nlines = min(args.max_spectra, len(baseline_spectra)) if args.max_spectra > 0 else None
-    for key in tqdm.tqdm(itertools.islice(baseline_spectra, start=0, stop=nlines), total=nlines):
+    for key in tqdm.tqdm(itertools.islice(baseline_spectra, nlines), total=nlines):
         data = list(parser.getDataAsTuple(key))
+        n = len(data)
 
         charge = key[1]
         seq = parser.psms[key].seq
