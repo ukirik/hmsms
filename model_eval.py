@@ -287,12 +287,12 @@ def baseline(args):
     parser = _getParser(args.data)
 
     t = args.spectra_threshold
-    nlines = args.max_spectra if args.max_spectra > 0 else None
-    for key in tqdm.tqdm(itertools.islice(parser.getKeys(), nlines)):
+    baseline_spectra = [key for key in parser.getKeys() if len(parser.getDataAsTuple(key)) > t]
+    print(f'{len(baseline_spectra)} peptides have more than {t} spectra')
+
+    nlines = min(args.max_spectra, len(baseline_spectra)) if args.max_spectra > 0 else None
+    for key in tqdm.tqdm(itertools.islice(baseline_spectra, start=0, stop=nlines), total=nlines):
         data = list(parser.getDataAsTuple(key))
-        n = len(data)
-        if n < t:
-            continue    # not enough spectra!
 
         charge = key[1]
         seq = parser.psms[key].seq
@@ -328,7 +328,7 @@ def baseline(args):
         model = model.finalizeModel(alpha=args.alpha)
         mockmodel = mockmodel.finalizeModel(alpha=args.alpha)
         #nlines = args.max_spectra if args.max_spectra > 0 else None
-        for line in tqdm.tqdm(itertools.islice(testdata, nlines)):
+        for line in tqdm.tqdm(itertools.islice(testdata, nlines), nlines):
             try:
                 tokens = line.rstrip('\r\n').split('\t')
                 z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
