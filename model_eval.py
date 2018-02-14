@@ -256,11 +256,9 @@ def baseline(args):
                 if prev == s:
                     return False
             except Exception as e:
-                import time
                 print(f"Unexpected number of tokens found on line! {s}")
                 e.args += (str(s),)
-                time.sleep(1)
-                return False
+                raise
 
             prev = s
         return True
@@ -269,15 +267,21 @@ def baseline(args):
         valid_spectra = data
         ntry = 1
         spectra = random.sample(valid_spectra, 2)
-        while not _validateSpectra(spectra):
-            ntry += 1
-            if ntry > 5:
-                valid_spectra = [d for d in data if len(d[1]) > 3]
-                if len(valid_spectra) < 2:
-                    print(f"Not enough spectra for {seq}")
-                    return None
+        try:
+            while not _validateSpectra(spectra):
+                ntry += 1
+                if ntry > 5:
+                    valid_spectra = [d for d in data if len(d[1]) > 3]
+                    if len(valid_spectra) < 2:
+                        print(f"Not enough spectra for {seq}")
+                        return None
 
-            spectra = random.sample(range(n), 2)
+                spectra = random.sample(range(n), 2)
+        except Exception as e:
+            import time
+            print(f"Exception occured during processing {seq}")
+            time.sleep(1)
+            input("Enter to continue...")
 
         return spectra
 
