@@ -346,7 +346,7 @@ def baseline(args):
         model = model.finalizeModel(alpha=args.alpha)
         mockmodel = mockmodel.finalizeModel(alpha=args.alpha)
         #nlines = args.max_spectra if args.max_spectra > 0 else None
-        for line in tqdm.tqdm(itertools.islice(testdata, nlines), nlines):
+        for line in tqdm.tqdm(itertools.islice(testdata, nlines), total=nlines):
             try:
                 tokens = line.rstrip('\r\n').split('\t')
                 z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
