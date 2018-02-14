@@ -256,7 +256,7 @@ def baseline(args):
                 if prev == s:
                     return False
             except Exception as e:
-                print(f"Unexpected number of tokens found on line! {s}")
+                print(f"Unexpected number of tokens found on line!")
                 e.args += (str(s),)
                 raise
 
@@ -276,7 +276,7 @@ def baseline(args):
                         print(f"Not enough spectra for {seq}")
                         return None
 
-                spectra = random.sample(range(n), 2)
+                spectra = random.sample(valid_spectra, 2)
         except Exception as e:
             import time
             print(f"Exception occured during processing {seq}")
@@ -326,11 +326,12 @@ def baseline(args):
         charge = key[1]
         seq = parser.psms[key].seq
 
-        dd = {}
         spectra = _getSpectraPair(seq, data)
+        assert len(spectra) == 2
         if spectra is None:
             continue
 
+        dd = {}
         for j in range(len(spectra)):
             score, yi, yw, bi, bw, yf = spectra[j]
             dd[j] = {i: ii for i, ii in zip(yi, yw)}
