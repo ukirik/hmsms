@@ -256,8 +256,10 @@ def baseline(args):
                 if prev == s:
                     return False
             except Exception as e:
-                print("Unexpected number of tokens found on line!")
+                import time
+                print(f"Unexpected number of tokens found on line! {s}")
                 e.args += (str(s),)
+                time.sleep(1)
                 return False
 
             prev = s
