@@ -316,7 +316,7 @@ def baseline(args):
         seq = parser.psms[key].seq
 
         dd = {}
-        spectra = _getSpectraPair(data)
+        spectra = _getSpectraPair(seq, data)
         if spectra is None:
             continue
 
