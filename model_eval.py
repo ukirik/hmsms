@@ -287,7 +287,7 @@ def baseline(args):
     parser = _getParser(args.data)
 
     t = args.spectra_threshold
-    baseline_spectra = [key for key in parser.getKeys() if len(parser.getDataAsTuple(key)) > t]
+    baseline_spectra = [key for key in parser.getKeys() if len(list(parser.getDataAsTuple(key))) > t]
     print(f'{len(baseline_spectra)} peptides have more than {t} spectra')
 
     nlines = min(args.max_spectra, len(baseline_spectra)) if args.max_spectra > 0 else None
