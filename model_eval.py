@@ -249,10 +249,15 @@ def baseline(args):
         assert len(spectra) == 2
 
         for s in spectra:
-            score, yi, yw, bi, bw, yf = s
-            if len(yi) < 3:
-                return False
-            if prev == s:
+            try:
+                score, yi, yw, bi, bw, yf = s
+                if len(yi) < 3:
+                    return False
+                if prev == s:
+                    return False
+            except Exception as e:
+                print("Unexpected number of tokens found on line!")
+                e.args += (line,)
                 return False
 
             prev = s
@@ -298,7 +303,7 @@ def baseline(args):
             print("FDR={}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
             return parser
 
-    import tqdm, time
+    import tqdm
 
     corrs = collections.defaultdict(list)
     parser = _getParser(args.data)
