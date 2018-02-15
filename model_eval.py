@@ -16,6 +16,8 @@ import common_utils
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+plt.ioff()
+
 import random
 import seaborn as sns
 
