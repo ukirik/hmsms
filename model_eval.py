@@ -327,7 +327,6 @@ def baseline(args):
         seq = parser.psms[key].seq
 
         spectra = _getSpectraPair(seq, data)
-        assert len(spectra) == 2
         if spectra is None:
             continue
 
