@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     infile = os.path.join(args.input_folder, args.file)
     with open(infile, 'r') as f:
-        parser = MQParser()
+        parser = MQParser(fdr_threshold=args.fdr, ion_threshold=args.threshold, mc=args.miss_cleavage, dodebug=False)
         reader = pd.read_csv(f, delimiter='\t', iterator=True, chunksize=100000)
 
         for index, chunk in enumerate(reader):
