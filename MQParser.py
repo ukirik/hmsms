@@ -218,7 +218,7 @@ class MQParser(object):
         _openf = lambda i: open(filepath.format(i, spectra), 'w')
 
         for i, keys in enumerate(key_slices):
-            with open(filepath.format(i, spectra), 'w') as outfile:
+            with open(filepath.format(i, spectra_t), 'w') as outfile:
                 for key in keys:
                     data = list(self.getDataAsTuple(key))
                     # data = sorted(data, key=itemgetter(0), reverse=True) # TODO: Unnecessary, data is already sorted
