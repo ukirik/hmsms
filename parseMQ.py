@@ -125,7 +125,7 @@ def memoryDebug(parser):
 
 
 def pre_parse(f):
-    import multiprocessing, subprocess
+    import multiprocessing, subprocess, psutil
 
     n_proc = multiprocessing.cpu_count()
     cols = [37, 62, 23, 10, 53, 57, 68, 26, 52, 4, 38, 5, 24]
@@ -136,12 +136,16 @@ def pre_parse(f):
     filename,ext = os.path.splitext(base)[0]
     outfile = f"{filename}_preparsed.{ext}"
 
-    shellcmd = f"gcut -f {fields} {f} | gsort -t $'\t' --parallel={n_proc} --key=7,7 -g -o {outfile}"
+    cutcmd = "gcut" if psutil.OSX else "cut"
+    sortcmd = "gsort" if psutil.OSX else "sort"
+
+    shellcmd = f"{cutcmd} -f {fields} {f} | {sortcmd} -t $'\t' --parallel={n_proc} --key=7,7 -g -o {outfile}"
     subprocess.run(shellcmd, shell=True)
 
     preparsedfile = os.path.join(pdir, outfile)
     assert os.path.exists(preparsedfile)
     return preparsedfile
+
 
 if __name__ == '__main__':
 
