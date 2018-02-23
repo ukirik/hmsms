@@ -176,6 +176,6 @@ if __name__ == '__main__':
 
     outfolder = os.path.join(args.output_folder, "training")
     if not os.path.exists(outfolder):
-        os.mkdirs(outfolder)
+        os.makedirs(outfolder)
 
     parser.outputResults(outfolder, args.spectra, args.nslices)
