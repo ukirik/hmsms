@@ -83,8 +83,8 @@ if __name__ == '__main__':
 
         np.seterr(invalid='ignore')
 
-        model = model.finalizeModel(alpha=args.alpha)
-        mockmodel = mockmodel.finalizeModel(alpha=args.alpha)
+        model = model.finalizeModel(alpha=450)
+        mockmodel = mockmodel.finalizeModel(alpha=450)
         nlines = args.max_spectra if args.max_spectra > 0 else None
         dd = {}
         counter = 0
