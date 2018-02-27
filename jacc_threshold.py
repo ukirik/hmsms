@@ -142,4 +142,7 @@ if __name__ == '__main__':
         # print(df_long.head())
 
         import seaborn as sns
-        sns.factorplot(x="Similarity", y="value", hue="model", data=df_long, size=12, ci='sd')
+        ax = sns.factorplot(x="Similarity", y="value", hue="model", data=df_long, size=12, ci='sd')
+        ax.despine(offset=10, trim=True)
+        plt.legend(loc='best')
+        ax.savefig('jacc.pdf')
