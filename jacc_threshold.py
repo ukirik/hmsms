@@ -75,7 +75,7 @@ if __name__ == '__main__':
     mock_pickle = args.mock
     file_gen = common_utils.yield_open(filenames=args.test_files)
     testdata = itertools.chain.from_iterable(file_gen)
-    thresholds = np.linspace(0.25, 0.95, n=15)
+    thresholds = np.linspace(0.25, 0.95, num=15)
 
     with open(model_pickle, 'rb') as picklefile, open(mock_pickle, 'rb') as mockfile:
         model = pickle.load(picklefile)
