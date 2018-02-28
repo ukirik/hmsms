@@ -6,8 +6,10 @@ import tqdm
 import re
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
-plt.ioff()
+import seaborn as sns
+matplotlib.use('Agg')
 
 
 def get_top_frags(zipped, threshold):
@@ -141,8 +143,9 @@ if __name__ == '__main__':
         df_long = pd.melt(df, id_vars=['seq', 'charge', 'peplen', 'model'], var_name="Similarity")
         # print(df_long.head())
 
-        import seaborn as sns
-        ax = sns.factorplot(x="Similarity", y="value", hue="model", data=df_long, size=12, ci='sd')
+        plt.ioff()
+
+        ax = sns.factorplot(x="Similarity", y="value", hue="model", data=df_long, size=12, ci='sd', legend=False)
         ax.despine(offset=10, trim=True)
         plt.legend(loc='best')
         ax.savefig('jacc.pdf')
