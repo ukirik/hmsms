@@ -67,7 +67,7 @@ parser = argparse.ArgumentParser(description='Evaluates the difference between m
 parser.add_argument('--model', help='path to model to use')
 parser.add_argument('--mock', help='path to corresponding mock model')
 parser.add_argument('--test_files', nargs='+', help='files to check corr on ')
-parser.add_argument('-n', '--max_spectra', type=int, default=None, help='number of predictions to run')
+parser.add_argument('-n', '--max_spectra', type=int, default=-1, help='number of predictions to run')
 
 if __name__ == '__main__':
     args = parser.parse_args()
