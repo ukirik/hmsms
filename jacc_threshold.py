@@ -135,6 +135,7 @@ def baseline():
             print("FDR={}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
             t = args.spectra_threshold
             filtered_spectra = [key for key in parser.getKeys() if len(list(parser.getDataAsTuple(key))) > t]
+            print(f'{len(filtered_spectra)} peptides have more than {t} spectra')
             return parser.get_subset(filtered_spectra)
 
 
@@ -143,7 +144,6 @@ def baseline():
     counter = 0
 
     baseline_spectra = parser.psms.keys()
-    print(f'{len(baseline_spectra)} peptides have more than {t} spectra')
     for key in tqdm.tqdm(itertools.islice(baseline_spectra)):
         data = list(parser.getDataAsTuple(key))
         seq = parser.psms[key].seq
