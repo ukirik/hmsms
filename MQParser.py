@@ -112,6 +112,12 @@ class MQParser(object):
     def getKeys(self):
         return list(self.psms.keys())
 
+    def get_subset(self, keyset):
+        import copy
+        parser = copy.copy(self)
+        parser.psms = {k: v for k, v in self.psms.items() if k in keyset}
+        return parser
+
     def incrementNeg(self):
         self.neg += 1
         self._updateFDR()

@@ -4,12 +4,15 @@ import common_utils
 import itertools
 import tqdm
 import re
+import collections
+import random
 import numpy as np
 import pandas as pd
 import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-matplotlib.use('Agg')
 
 
 def get_top_frags(zipped, threshold):
@@ -65,9 +68,112 @@ def _getbin(l):
         return '27+'
 
 
+def baseline():
+
+    def _validateSpectraPair(spectra, minlength):
+        prev = None
+        assert len(spectra) == 2
+
+        for s in spectra:
+            try:
+                score, yi, yw, bi, bw, yf = s
+                if len(yi) < minlength:
+                    return False
+                if prev == s:
+                    return False
+            except Exception as e:
+                print(f"Unexpected number of tokens found!")
+                e.args += (str(s),)
+                raise
+
+            prev = s
+        return True
+
+    def _getSpectraPair(seq, data):
+        valid_spectra = data
+        ntry = 1
+        spectra = random.sample(valid_spectra, 2)
+        try:
+            while not _validateSpectraPair(spectra, 5):
+                ntry += 1
+                if ntry > 5:
+                    valid_spectra = [d for d in data if len(d[1]) > 3]
+                    if len(valid_spectra) < 2:
+                        print(f"Not enough spectra for {seq}")
+                        return None
+
+                spectra = random.sample(valid_spectra, 2)
+
+        except Exception as e:
+            print(f"Exception occured during processing {seq}")
+            e.args += (str(data),)
+            raise
+
+        return spectra
+
+
+    def _getParser(infile):
+        print('Processing the spectra...')
+        from MQParser import MQParser
+        with open(infile, 'r') as f:
+            parser = MQParser()
+            reader = pd.read_csv(f, delimiter='\t', iterator=True, chunksize=100000)
+
+            for index, chunk in enumerate(reader):
+                df = pd.DataFrame(chunk)
+                if not index:
+                    # Creates valid column names for pandas
+                    colnames = [col.strip().replace(" ", "_") for col in df.columns]
+
+                df.columns = colnames
+                loop = parser.processChunk(df, True) # Input assumed to be sorted
+
+                if not loop:  # check if FDR threshold is met
+                    break
+
+            print("Finished parsing spectra")
+            print("FDR={}, pos={}, neg={}".format(parser.fdr, parser.pos, parser.neg))
+            t = args.spectra_threshold
+            filtered_spectra = [key for key in parser.getKeys() if len(list(parser.getDataAsTuple(key))) > t]
+            return parser.get_subset(filtered_spectra)
+
+
+    parser = _getParser(args.train_data)
+    dd = collections.defaultdict(list)
+    counter = 0
+
+    baseline_spectra = parser.psms.keys()
+    print(f'{len(baseline_spectra)} peptides have more than {t} spectra')
+    for key in tqdm.tqdm(itertools.islice(baseline_spectra)):
+        data = list(parser.getDataAsTuple(key))
+        seq = parser.psms[key].seq
+
+        spectra = _getSpectraPair(seq, data)
+        if spectra is None:
+            continue
+
+        s1, s2 = tuple(zip(yi, yw) for score, yi, yw, bi, bw, yf in spectra)
+        base_j = [jacc(s1, s2, threshold=t) for t in thresholds]
+        temp = dict()
+        temp['seq'] = seq
+        temp['charge'] = _bin_z(z)
+        temp['peplen'] = _getbin(len(seq))
+        temp['model'] = 'baseline'
+
+        for i, t in enumerate(thresholds):
+            temp[f'{t:.2f}'] = base_j[i]
+
+        dd[counter] = temp
+        counter += 1
+
+    print(f'finished parsing baseline data...')
+    return dd
+
 parser = argparse.ArgumentParser(description='Evaluates the difference between model and mock for optimal Jacc similarity')
 parser.add_argument('--model', help='path to model to use')
 parser.add_argument('--mock', help='path to corresponding mock model')
+parser.add_argument('--train_data', help='files containing data used for training, for baseline estimation ')
+parser.add_argument('--spectra_threshold', default=100, type=int, help='min nbr of spectra to consider')
 parser.add_argument('--test_files', nargs='+', help='files to check corr on ')
 parser.add_argument('-n', '--max_spectra', type=int, default=-1, help='number of predictions to run')
 
@@ -88,7 +194,7 @@ if __name__ == '__main__':
         model = model.finalizeModel(alpha=450)
         mockmodel = mockmodel.finalizeModel(alpha=450)
         nlines = args.max_spectra if args.max_spectra > 0 else None
-        dd = {}
+        dd = baseline()
         counter = 0
         for line in tqdm.tqdm(itertools.islice(testdata, nlines), total=nlines):
             try:
@@ -115,7 +221,7 @@ if __name__ == '__main__':
                 temp['model'] = 'real'
 
                 for i, t in enumerate(thresholds):
-                    temp[f'j{t:.2f}'] = sims[i]
+                    temp[f'{t:.2f}'] = sims[i]
 
                 dd[counter] = temp
                 counter += 1
@@ -130,7 +236,7 @@ if __name__ == '__main__':
                 temp['model'] = 'mock'
 
                 for i, t in enumerate(thresholds):
-                    temp[f'j{t:.2f}'] = mocks[i]
+                    temp[f'{t:.2f}'] = mocks[i]
 
                 dd[counter] = temp
                 counter += 1
@@ -144,8 +250,8 @@ if __name__ == '__main__':
         # print(df_long.head())
 
         plt.ioff()
-
-        ax = sns.factorplot(x="Similarity", y="value", hue="model", data=df_long, size=12, ci='sd', legend=False)
-        ax.despine(offset=10, trim=True)
+        from numpy import median
+        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, size=12, ci=99, legend=False, estimator=median)
+        ax.despine(offset=10)
         plt.legend(loc='best')
         ax.savefig('jacc.pdf')
