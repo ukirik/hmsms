@@ -16,6 +16,8 @@ import seaborn as sns
 
 
 def get_top_frags(zipped, threshold):
+
+    assert threshold > 0.0
     import operator
     ig = operator.itemgetter(1)
     temp = sorted(zipped, key=ig, reverse=True)
@@ -92,25 +94,25 @@ def baseline():
     def _getSpectraPair(seq, data):
         valid_spectra = data
         ntry = 1
+        minlen = 5
         spectra = random.sample(valid_spectra, 2)
         try:
-            while not _validateSpectraPair(spectra, 5):
+            while not _validateSpectraPair(spectra, minlen):
                 ntry += 1
                 if ntry > 5:
-                    valid_spectra = [d for d in data if len(d[1]) > 3]
+                    valid_spectra = [d for d in data if len(d[1]) > minlen]
                     if len(valid_spectra) < 2:
-                        print(f"Not enough spectra for {seq}")
+                        print(f"Not enough valid spectra for {seq}")
                         return None
 
                 spectra = random.sample(valid_spectra, 2)
 
         except Exception as e:
-            print(f"Exception occured during processing {seq}")
+            print(f"Exception occurred during processing {seq}")
             e.args += (str(data),)
             raise
 
         return spectra
-
 
     def _getParser(infile):
         print('Processing the spectra...')
@@ -152,8 +154,10 @@ def baseline():
         if spectra is None:
             continue
 
-        s1, s2 = tuple(zip(yi, yw) for score, yi, yw, bi, bw, yf in spectra)
-        base_j = [jacc(s1, s2, threshold=t) for t in thresholds]
+        score, yi_1, yw_1, *rest = spectra[0]
+        score, yi_2, yw_2, *rest = spectra[1]
+
+        base_j = [jacc(zip(yi_1, yw_1), zip(yi_2, yw_2), threshold=t) for t in thresholds]
         temp = dict()
         temp['seq'] = seq
         temp['charge'] = _bin_z(z)
@@ -168,6 +172,7 @@ def baseline():
 
     print(f'finished parsing baseline data...')
     return dd
+
 
 parser = argparse.ArgumentParser(description='Evaluates the difference between model and mock for optimal Jacc similarity')
 parser.add_argument('--model', help='path to model to use')
