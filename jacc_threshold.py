@@ -149,6 +149,7 @@ def baseline():
     for key in tqdm.tqdm(baseline_spectra):
         data = list(parser.getDataAsTuple(key))
         seq = parser.psms[key].seq
+        z = key[1]
 
         spectra = _getSpectraPair(seq, data)
         if spectra is None:
