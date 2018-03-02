@@ -144,7 +144,7 @@ def baseline():
     counter = 0
 
     baseline_spectra = parser.psms.keys()
-    for key in tqdm.tqdm(itertools.islice(baseline_spectra)):
+    for key in tqdm.tqdm(baseline_spectra):
         data = list(parser.getDataAsTuple(key))
         seq = parser.psms[key].seq
 
