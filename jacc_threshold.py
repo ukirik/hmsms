@@ -201,7 +201,7 @@ if __name__ == '__main__':
         mockmodel = mockmodel.finalizeModel(alpha=450)
         nlines = args.max_spectra if args.max_spectra > 0 else None
         dd = baseline()
-        counter = 0
+        counter = len(dd.keys())
         for line in tqdm.tqdm(itertools.islice(testdata, nlines), total=nlines):
             try:
                 tokens = line.rstrip('\r\n').split('\t')
