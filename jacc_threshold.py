@@ -252,7 +252,7 @@ if __name__ == '__main__':
                 raise
 
         df = pd.DataFrame.from_dict(dd, orient='index')
-        df_long = pd.melt(df, id_vars=['seq', 'charge', 'peplen', 'model'], var_name="Similarity")
+        df_long = pd.melt(df, id_vars=['seq', 'charge', 'peplen', 'model'], var_name="threshold")
         # print(df_long.head())
 
         plt.ioff()
@@ -260,4 +260,4 @@ if __name__ == '__main__':
         ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, size=12, ci=99, legend=False, estimator=median)
         ax.despine(offset=10)
         plt.legend(loc='best')
-        ax.savefig('jacc.pdf')
+        ax.savefig('jacc_median_ci95.pdf')
