@@ -13,7 +13,9 @@ parser.add_argument('-l', '--linear_search', action='store_true', default=False,
                     help='toggle linear grid search, false by default')
 parser.add_argument('-r', '--range', type=int, nargs=2, default=[1, 1000],
                     help='the range of values to search for an optimal alpha')
+parser.add_argument('-n', '--nvals', type=int, nargs=1, default=10, help='the nbr of values to evaluate')
 parser.add_argument('--nthreads', help='number of threads to use', default=4, type=int)
+parser.add_argument('--multi_pass', help='toggle multiple pass search', default=False, action='store_true')
 
 # parser.add_argument('-n', help='name of the model', default='hmm_model')
 # parser.add_argument('-p', help='print/pickle location', default='hmm_models')
@@ -72,18 +74,26 @@ def estimateForAlphas(alphas, i):
 
 
 def main(low, high, iter_counter):
-    search_space = np.linspace(low, high, 10, dtype=int) if args.linear_search else np.geomspace(low, high, 10, dtype=int)
+    search_space = np.linspace(low, high, args.nvals, dtype=int) if args.linear_search else np.geomspace(low, high, args.nvals, dtype=int)
     iter_counter += 1
     res = estimateForAlphas(search_space, iter_counter)
-    x = res[0][0]
-    y = res[1][0]
 
-    if abs(x-y) < 10:
-        print(f"Optimal alpha is between {x}-{y}")
-    elif x < y:
-        main(x, y, iter_counter)
+    if args.multi_pass:
+        # Re-run with second and third best, assumption is that best value is in between 2nd and 3rd best.
+        best = res[0][0]
+        x = res[1][0]
+        y = res[2][0]
+        assert not ((best < x and best < y) or (best > x and best > y)), f"best val={best}, sec={x}, third={y}"
+
+        if abs(x-y) < 5:
+            print(f"Optimal alpha is between {x}-{y}")
+        elif x < y:
+            main(x, y, iter_counter)
+        else:
+            main(y, x, iter_counter)
     else:
-        main(y, x, iter_counter)
+        print(f"Top alpha value is {res[0][0]} with an average corr {res[0][1]}")
+        print(f"For comparison: the second best alpha was {res[1][0]} with an average corr {res[1][1]}")
 
 if __name__ == "__main__":
     low, high = args.range

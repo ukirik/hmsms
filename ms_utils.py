@@ -57,14 +57,17 @@ def getMass(seq, iontype=''):
 
     return m
 
+
 def getAACounts(seq):
     c = collections.Counter(seq)
     return {aa: c[aa] for aa in seq}
+
 
 class MPT(Enum):
     MOBILE = 1
     PARTIAL = 2
     NONMOBILE = 3
+
 
 def getMPClass(seq, z):
     counts = collections.defaultdict(int, getAACounts(seq))
@@ -79,6 +82,7 @@ def getMPClass(seq, z):
         return MPT.NONMOBILE
     else:
         AssertionError('Should not happen!')
+
 
 def pred2Spectra(seq, ionsNprobs):
 

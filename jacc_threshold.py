@@ -206,6 +206,9 @@ if __name__ == '__main__':
             try:
                 tokens = line.rstrip('\r\n').split('\t')
                 z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
+                y_ints = [float(i) for i in y_ints.split(' ')]
+                y_ions = y_ions.split(' ')
+
                 if len(y_ints) < 3:
                     continue
                 if int(z) == 1:
@@ -213,9 +216,6 @@ if __name__ == '__main__':
                 if len(re.findall('[KR]', seq)) > 2:
                     # print(seq)
                     continue
-
-                y_ints = [float(i) for i in y_ints.split(' ')]
-                y_ions = y_ions.split(' ')
 
                 ii, it = model.calc_fragments(charge=int(z), seq=seq, ion_type='y', use_yfrac=False)
                 sims = [jacc(zip(y_ions, y_ints), zip(ii, it), threshold=t) for t in thresholds]
