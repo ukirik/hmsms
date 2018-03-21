@@ -13,7 +13,7 @@ parser.add_argument('-l', '--linear_search', action='store_true', default=False,
                     help='toggle linear grid search, false by default')
 parser.add_argument('-r', '--range', type=int, nargs=2, default=[1, 1000],
                     help='the range of values to search for an optimal alpha')
-parser.add_argument('-n', '--nvals', type=int, nargs=1, default=10, help='the nbr of values to evaluate')
+parser.add_argument('-n', '--nvals', type=int, default=10, help='the nbr of values to evaluate')
 parser.add_argument('--nthreads', help='number of threads to use', default=4, type=int)
 parser.add_argument('--multi_pass', help='toggle multiple pass search', default=False, action='store_true')
 
