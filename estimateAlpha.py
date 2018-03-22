@@ -58,31 +58,32 @@ def testAlpha(a, m, testdata):
     return a, mean_corr
 
 
-def estimateForAlphas(alphas, i):
+def estimateForAlphas(alphas):
     #testdata = itertools.chain.from_iterable(file_gen)
 
     from multiprocessing import Pool as ThreadPool
     from functools import partial
     with open(args.model, 'rb') as pickle_f, ThreadPool(args.nthreads) as pool:
         m = pickle.load(pickle_f)
-        corrs = pool.imap_unordered(partial(testAlpha, m=m, testdata=args.test_files), alphas)
-        sorted_res = sorted(corrs, key=operator.itemgetter(1), reverse=True)
-        print(f"Iteration {i}:")
-        pprint.pprint(dict(sorted_res))
+        corrs = pool.map(partial(testAlpha, m=m, testdata=args.test_files), alphas)
 
-    return sorted_res
+    return corrs
 
 
 def main(low, high, iter_counter):
     search_space = np.linspace(low, high, args.nvals, dtype=int) if args.linear_search else np.geomspace(low, high, args.nvals, dtype=int)
     iter_counter += 1
-    res = estimateForAlphas(search_space, iter_counter)
+    res = estimateForAlphas(search_space)
+    sorted_res = sorted(res, key=operator.itemgetter(1), reverse=True)
+    print(f"Iteration {iter_counter}:")
+    pprint.pprint(dict(sorted_res))
 
     if args.multi_pass:
-        # Re-run with second and third best, assumption is that best value is in between 2nd and 3rd best.
-        best = res[0][0]
-        x = res[1][0]
-        y = res[2][0]
+        # Re-run with second and third best, assumption is that best value is in the range [left, right]
+        best = sorted_res[0][0]
+        ind = list(search_space).index(best)
+        x = search_space[ind-1]
+        y = search_space[ind+1]
         assert not ((best < x and best < y) or (best > x and best > y)), f"best val={best}, sec={x}, third={y}"
 
         if abs(x-y) < 5:
@@ -92,8 +93,8 @@ def main(low, high, iter_counter):
         else:
             main(y, x, iter_counter)
     else:
-        print(f"Top alpha value is {res[0][0]} with an average corr {res[0][1]}")
-        print(f"For comparison: the second best alpha was {res[1][0]} with an average corr {res[1][1]}")
+        print(f"Top alpha value is {sorted_res[0][0]} with an average corr {sorted_res[0][1]}")
+        print(f"For comparison: the second best alpha was {sorted_res[1][0]} with an average corr {sorted_res[1][1]}")
 
 if __name__ == "__main__":
     low, high = args.range

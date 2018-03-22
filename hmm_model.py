@@ -340,6 +340,9 @@ class FragmentHMM(object):
         return ions, ps
 
     def calc_fragments(self, seq, charge, ion_type='all', use_yfrac=True):
+        if not self.finalized:
+            raise AssertionError('The model is not finalized, i.e. pseudocounts are not added yet! Call finalizeModel() with an appropriate alpha value')
+
         # y_ions, y_ps, b_ions, b_ps = [], [], [], []
         if ion_type == 'y':
             return self._get_ions_and_ps(seq, charge, 'y', use_yfrac=use_yfrac)
