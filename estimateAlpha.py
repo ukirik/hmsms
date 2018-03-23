@@ -84,7 +84,7 @@ def main(low, high, iter_counter):
         ind = list(search_space).index(best)
         x = search_space[ind-1]
         y = search_space[ind+1]
-        assert not ((best < x and best < y) or (best > x and best > y)), f"best val={best}, sec={x}, third={y}"
+        assert not ((best < x and best < y) or (best > x and best > y)), f"best val={best}, sec={x}, third={y}\nsearch_space={search_space}"
 
         if abs(x-y) < 5:
             print(f"Optimal alpha is between {x}-{y}")
