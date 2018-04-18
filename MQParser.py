@@ -1,4 +1,5 @@
 import sys, random, re, logging, collections, os, io
+from numpy import random
 
 
 class PSM(object):
@@ -246,11 +247,12 @@ class MQParser(object):
 
     def _getSpectra(self, data, spectra):
         # Pick the spectra to use, depending on runtime param
-        if spectra == 'best' or spectra == 'top1':
+        if spectra == 'best':
             return [data[0]]
 
-        elif spectra == 'top3':
-            return [data[psm] for psm in range(min(len(data), 3))]
+        elif spectra == 'rand':
+            r = random.randint(len(data))
+            return [data[r]]
 
         elif spectra == 'med':
             return [data[len(data) // 2]]

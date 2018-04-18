@@ -95,7 +95,7 @@ parser.add_argument('-m', '--miss_cleavage', default=1, type=int, help='maximum 
 parser.add_argument('-t', '--threshold', default=0.001, type=float, help='Threshold value for ions to be included')
 parser.add_argument('-fdr', default=0.01, type=float, help='fdr cutoff')
 parser.add_argument('-r', '--rseed', type=int, help='set seed for random module, useful for checking xfold')
-parser.add_argument('-s', '--spectra', default='top3', choices=['best', 'top1', 'top3', 'med', 'ave', 'all'],
+parser.add_argument('-s', '--spectra', default='best', choices=['best', 'rand', 'med', 'ave', 'all'],
                     help='Which spectra to use in case there are multiple for a peptide')
 parser.add_argument('-v', '--verbose', default=False, action='store_true')
 parser.add_argument('-d', '--debug', default=False, action='store_true')

@@ -208,7 +208,7 @@ if __name__ == '__main__':
                 z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
                 if y_ints == '':
                     continue
-                    
+
                 y_ints = [float(i) for i in y_ints.split(' ')]
                 y_ions = y_ions.split(' ')
 
