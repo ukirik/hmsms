@@ -197,8 +197,8 @@ if __name__ == '__main__':
 
         np.seterr(invalid='ignore')
 
-        model = model.finalizeModel(alpha=450)
-        mockmodel = mockmodel.finalizeModel(alpha=450)
+        model = model.finalizeModel(alpha=250)
+        mockmodel = mockmodel.finalizeModel(alpha=250)
         nlines = args.max_spectra if args.max_spectra > 0 else None
         dd = baseline()
         counter = len(dd.keys())
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                 temp['seq'] = seq
                 temp['charge'] = _bin_z(z)
                 temp['peplen'] = _getbin(len(seq))
-                temp['model'] = 'real'
+                temp['model'] = 'model'
 
                 for i, t in enumerate(thresholds):
                     temp[f'{t:.2f}'] = sims[i]
@@ -256,8 +256,10 @@ if __name__ == '__main__':
         # print(df_long.head())
 
         plt.ioff()
-        from numpy import median
-        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, size=12, ci=99, legend=False, estimator=median)
+        from numpy import nanmean
+
+        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, size=12, ci=99, legend=False, estimator=nanmean)
+        ax.fig.suptitle("")
         ax.despine(offset=10)
         plt.legend(loc='best')
-        ax.savefig('jacc_median_ci95.pdf')
+        ax.savefig('jacc_nanmean_ci99.pdf')
