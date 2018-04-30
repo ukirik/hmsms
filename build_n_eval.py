@@ -108,7 +108,6 @@ def check_corr(testfiles, m, zeronas=False):
                         'spearmans': s
                     }
                     results.append(res)
-                    d = pd.DataFrame(results)
 
                 except ValueError as e:
                     print("Unexpected number of tokens found on line, skipping this entry!")
@@ -131,6 +130,7 @@ def check_corr(testfiles, m, zeronas=False):
         #     print(df_s)
         #     print()
 
+    d = pd.DataFrame(results)
     return d
 
 
