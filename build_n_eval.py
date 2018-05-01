@@ -110,7 +110,7 @@ def check_corr(testfiles, m, zeronas=False):
                         'charge': z,
                         'z.bin': _zbin(z),
                         'peplen': len(seq),
-                        'l.bin': _lbin(seq),
+                        'l.bin': _lbin(len(seq)),
                         'mpt.class': ms_utils.getMPClass(seq, z),
                         'exp.ints': df['exp'].to_json(),
                         'pred.ints': df['model'].to_json(),
