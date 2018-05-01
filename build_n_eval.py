@@ -62,9 +62,19 @@ def check_corr(testfiles, m, zeronas=False):
     model = m.finalizeModel(alpha=256)
     results = []
 
-    _z = lambda x: int(x) if int(x) < 4 else 4
-    _l = lambda s: (len(s) - 7) // 5 if (len(s) - 7) // 5 < 4 else 4
-    _col2pairs = lambda ds: ds.to_json()
+    _zbin = lambda x: int(x) if int(x) < 4 else 4
+
+    def _lbin(l):
+        if 7 <= l < 12:
+            return '7-11'
+        elif 12 <= l < 17:
+            return '12-16'
+        elif 17 <= l < 22:
+            return '17-21'
+        elif 22 <= l < 27:
+            return '22-26'
+        elif 27 <= l:
+            return '27+'
 
     for somefile in testfiles:
         print(f"Calculating predication correlations for file: {somefile}")
@@ -96,14 +106,14 @@ def check_corr(testfiles, m, zeronas=False):
                     p = df.corr(method='pearson').iat[0, 1]
                     s = df.corr(method='spearman').iat[0, 1]
                     res = {
-                        'seq' : seq,
-                        'charge' : z,
-                        'z.bin' : _z(z),
-                        'peplen' : len(seq),
-                        'l.bin' : _l(seq),
-                        'mpt.class' : ms_utils.getMPClass(seq, z),
-                        'exp.ints' : _col2pairs(df['exp']),
-                        'pred.ints' : _col2pairs(df['model']),
+                        'seq': seq,
+                        'charge': z,
+                        'z.bin': _zbin(z),
+                        'peplen': len(seq),
+                        'l.bin': _lbin(seq),
+                        'mpt.class': ms_utils.getMPClass(seq, z),
+                        'exp.ints': df['exp'].to_json(),
+                        'pred.ints': df['model'].to_json(),
                         'pearsons': p,
                         'spearmans': s
                     }
@@ -131,6 +141,7 @@ def check_corr(testfiles, m, zeronas=False):
         #     print()
 
     d = pd.DataFrame(results)
+    d = d[['seq', 'charge', 'z.bin', 'peplen', 'l.bin', 'mpt.class', 'pearsons', 'spearmans', 'exp.ints', 'pred.ints']]
     return d
 
 
@@ -195,7 +206,7 @@ if __name__ == '__main__':
         print(f'testing files: {args.test_files}')
         if args.out is not '.':
             import os
-            os.mkdir(args.out)
+            os.makedirs(args.out, exist_ok=True)
 
         df = check_corr(args.test_files, model)
         df.to_csv(path_or_buf=os.path.join(args.out, "pred_results.csv"))
