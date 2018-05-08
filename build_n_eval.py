@@ -56,7 +56,7 @@ def plot2File(df, file, seq, z, score, p, s):
     plt.close()
 
 
-def check_corr(testfiles, m, zeronas=False):
+def check_corr(testfiles, m):
     np.seterr(invalid='ignore')
     model = m.finalizeModel(alpha=256)
     results = []
@@ -99,11 +99,10 @@ def check_corr(testfiles, m, zeronas=False):
                          }
 
                     df = pd.DataFrame.from_dict(d)
-                    if zeronas:
-                        df.fillna(0, inplace=True)
-
                     p = df.corr(method='pearson').iat[0, 1]
                     s = df.corr(method='spearman').iat[0, 1]
+                    p_z = df.fillna(0).corr(method='pearson').iat[0, 1]
+
                     res = {
                         'seq': seq,
                         'charge': z,
@@ -113,8 +112,11 @@ def check_corr(testfiles, m, zeronas=False):
                         'mpt_class': ms_utils.getMPClass(seq, z),
                         'exp_ints': df['exp'].to_json(),
                         'pred_ints': df['model'].to_json(),
+                        'y_frac': float(y_frac),
+                        'a_score':float(score),
                         'pearsons': p,
-                        'spearmans': s
+                        'pearsonz':p_z,
+                        'spearman': s
                     }
                     results.append(res)
 
@@ -140,7 +142,7 @@ def check_corr(testfiles, m, zeronas=False):
         #     print()
 
     d = pd.DataFrame(results)
-    d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'mpt_class', 'pearsons', 'spearmans', 'exp_ints', 'pred_ints']]
+    d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class', 'pearsons', 'pearsonz', 'spearman', 'exp_ints', 'pred_ints']]
     return d
 
 
