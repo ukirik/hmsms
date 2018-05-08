@@ -211,6 +211,7 @@ if __name__ == '__main__':
 
         df = check_corr(args.test_files, model)
         df.to_csv(path_or_buf=os.path.join(args.out, "pred_results.csv"))
-        print(f'Average Pearsons correlation: {df["pearsons"].mean()}')
-        print(f'Average Spearmans correlation: {df["spearmans"].mean()}')
+        print(f'Pearsons correlation: mean={df["pearsons"].mean()}, median={df["pearsons"].median()}')
+        print(f'Pearsons corr (zero): mean={df["pearsonz"].mean()}, median={df["pearsonz"].median()}')
+        print(f'Pearsons correlation: mean={df["spearman"].mean()}, median={df["spearman"].median()}')
 
