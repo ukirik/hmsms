@@ -140,7 +140,7 @@ def check_corr(testfiles, m, zeronas=False):
         #     print()
 
     d = pd.DataFrame(results)
-    d = d[['seq', 'charge', 'z.bin', 'peplen', 'l.bin', 'mpt.class', 'pearsons', 'spearmans', 'exp.ints', 'pred.ints']]
+    d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'mpt_class', 'pearsons', 'spearmans', 'exp_ints', 'pred_ints']]
     return d
 
 
