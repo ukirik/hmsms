@@ -76,9 +76,9 @@ def getMPClass(seq, z):
 
     if z > counts['R'] + counts['K'] + counts['H']:
         return MPT.MOBILE
-    elif counts['K'] + counts['H'] > z - counts['R'] > 0:
+    elif counts['K'] + counts['H'] >= z - counts['R'] > 0:
         return MPT.PARTIAL
-    elif counts['R'] > z:
+    elif counts['R'] >= z:
         return MPT.NONMOBILE
     else:
         AssertionError('Should not happen!')

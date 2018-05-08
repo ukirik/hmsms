@@ -1,5 +1,4 @@
 from hmm_model import FragmentHMM
-from collections import defaultdict
 import common_utils
 import ms_utils
 import argparse
@@ -12,7 +11,7 @@ import matplotlib
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
+#from matplotlib.backends.backend_pdf import PdfPages
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train HMM')
@@ -62,7 +61,7 @@ def check_corr(testfiles, m, zeronas=False):
     model = m.finalizeModel(alpha=256)
     results = []
 
-    _zbin = lambda x: int(x) if int(x) < 4 else 4
+    _zbin = lambda x: x if int(x) < 4 else '4+'
 
     def _lbin(l):
         if 7 <= l < 12:
@@ -108,12 +107,12 @@ def check_corr(testfiles, m, zeronas=False):
                     res = {
                         'seq': seq,
                         'charge': z,
-                        'z.bin': _zbin(z),
+                        'z_bin': _zbin(z),
                         'peplen': len(seq),
-                        'l.bin': _lbin(len(seq)),
-                        'mpt.class': ms_utils.getMPClass(seq, z),
-                        'exp.ints': df['exp'].to_json(),
-                        'pred.ints': df['model'].to_json(),
+                        'l_bin': _lbin(len(seq)),
+                        'mpt_class': ms_utils.getMPClass(seq, z),
+                        'exp_ints': df['exp'].to_json(),
+                        'pred_ints': df['model'].to_json(),
                         'pearsons': p,
                         'spearmans': s
                     }
