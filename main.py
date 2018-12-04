@@ -168,8 +168,8 @@ def generateModel(is_mock=False, save=True):
 
     if save:
         prefix = "hmm".format(model.order) if args.name is None else args.name
-        suffix = "mock" if is_mock else ""
-        picklefile = f"{prefix}_{model.order}_{suffix}.pickle"
+        suffix = "_mock" if is_mock else ""
+        picklefile = f"{prefix}_{model.order}{suffix}.pickle"
         model.serialize(args.pickle, picklefile)
         print("Saving model {} to disk at {}".format(picklefile, args.pickle))
 
@@ -197,8 +197,12 @@ if __name__ == '__main__':
     if args.test_files:
         print(args.test_files)
         if args.out is not '.':
-            import os
-            os.mkdir(args.out)
+            import os, errno
+            try:
+                os.makedirs(args.out)
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    raise
 
         with PdfPages(os.path.join(args.out, "preds_high.pdf")) as g, \
                 PdfPages(os.path.join(args.out, "preds_low.pdf")) as b:
@@ -209,7 +213,8 @@ if __name__ == '__main__':
             with open('prediction_results.txt', 'w') as outf:
                 outf.write('\t'.join(['Sequence', 'Charge State', 'Length', 'Score', 'MPT Class']))
                 for fields in res:
-                    outf.write('\t'.join(fields))
+                    tokens = [str(t) for t in fields]
+                    outf.write('\t'.join(tokens))
 
             # with open(os.path.join(args.out,'low_corr.txt'), 'w') as lowf, \
                 # open(os.path.join(args.out,'high_corr.txt'), 'w') as highf:

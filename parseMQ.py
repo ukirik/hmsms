@@ -131,18 +131,20 @@ def pre_parse(f):
     cols = [37, 62, 23, 10, 53, 57, 68, 26, 52, 4, 38, 5, 24]
     fields = ','.join(map(str, cols))
 
-
-    pdir,base = os.path.split(f)
-    filename,ext = os.path.splitext(base)[0]
+    pdir, base = os.path.split(f)
+    filename, ext = os.path.splitext(base)
     outfile = f"{filename}_preparsed.{ext}"
 
     cutcmd = "gcut" if psutil.OSX else "cut"
     sortcmd = "gsort" if psutil.OSX else "sort"
 
     shellcmd = f"{cutcmd} -f {fields} {f} | {sortcmd} -t $'\t' --parallel={n_proc} --key=7,7 -g -o {outfile}"
-    subprocess.run(shellcmd, shell=True)
+    print(f"Executing: '{shellcmd}'")
 
+    subprocess.run(shellcmd, shell=True)
     preparsedfile = os.path.join(pdir, outfile)
+    print("Sorting complete...")
+
     assert os.path.exists(preparsedfile)
     return preparsedfile
 
@@ -154,7 +156,8 @@ if __name__ == '__main__':
 
     infile = os.path.join(args.input_folder, args.file)
 
-    if (os.path.getsize(infile) >> 30 and not args.sorted) > 4:     # if the input file is too large (bigger than 4GB)
+    if not args.sorted and (os.path.getsize(infile) >> 30) > 4:     # if the input file is too large (bigger than 4GB)
+        print(f"Attempting to trim and sort the input data")
         infile = pre_parse(infile)
 
     with open(infile, 'r') as f:
