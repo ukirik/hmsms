@@ -148,8 +148,9 @@ def generateModel(is_mock=False, save=True):
     model = None
     with ThreadPool(args.nthreads) as pool:
         from functools import partial
-        print("Instantiating an order {} model, "
-              "intermediate models will be created and used as needed...".format(args.order))
+        mock_desc = " mock " if is_mock else " "
+        print(f"Instantiating a{mock_desc}{args.order}-order  model, "
+              "intermediate models will be created and used as needed...")
 
         # for f in tqdm(files, desc='Reading training data', mininterval=10):
         # partial_counts = pool.map(lambda f: FragmentHMM(order=args.order, indata=f), files)

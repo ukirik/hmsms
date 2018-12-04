@@ -117,7 +117,10 @@ class Econtainer(object):
         self.size = (n_states, self.nvar, len(emissions))
 
         self.pcount = 1 / len(emissions) if order == 0 else pcount
-        self.values = np.ones(self.size, dtype=np.float64) * self.pcount
+
+        # temporary (hopefully!) ugly hack to keep memory usage low
+        dt = np.float64 if order < 4 else np.float32
+        self.values = np.ones(self.size, dtype=dt) * self.pcount
 
     def norm(self):
         """
