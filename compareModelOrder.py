@@ -22,10 +22,10 @@ parser.add_argument('-t', '--test-files', help='optional names for the input fil
 parser.add_argument('-o', '--outfile', help='name of the output CSV file', default='comparison.csv')
 args = parser.parse_args()
 
-if args.names and len(args.input) != len(args.names):
+if args.names and len(args.models) != len(args.names):
     sys.exit("Number of names and files do not match!")
 
-if len(args.input) == 1:
+if len(args.models) == 1:
     sys.exit("Nothing to compare, only one model given!")
 
 def getIonProbs(model, z, seq):
