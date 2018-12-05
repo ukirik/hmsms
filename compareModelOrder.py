@@ -46,6 +46,7 @@ def _lbin(l):
     elif 27 <= l:
         return '27+'
 
+
 if __name__ == '__main__':
 
     data = {}
@@ -61,11 +62,14 @@ if __name__ == '__main__':
     testdata = itertools.chain.from_iterable(file_gen)
     results = []
     nlines = None
+    too_few_y = 0
+    too_few_tokens = 0
     for line in itertools.islice(testdata, nlines):
         try:
             tokens = line.rstrip('\r\n').split('\t')
             z, seq, score, y_ions, y_ints, b_ions, b_ints, y_frac = tokens
             if len(y_ints) < 3:
+                too_few_y += 1
                 continue
 
             y_ints = [float(i) for i in y_ints.split(' ')]
@@ -93,16 +97,18 @@ if __name__ == '__main__':
                 'a_score':float(score)
             }
 
-            for i,n in enumerate(names):
+            for i, n in enumerate(names):
                 res[n] = p.loc[n][0]
 
             results.append(res)
 
         except ValueError as e:
-            print("Unexpected number of tokens found on line, skipping this entry!")
-            e.args += (line,)
+            # print("Unexpected number of tokens found on line, skipping this entry!")
+            # e.args += (line,)
+            too_few_tokens += 1
             continue
 
+    print(f"Number of skipped rows: \n - Too few y-ions = {too_few_y} \n - Incomplete rows = {too_few_tokens}")
     d = pd.DataFrame(results)
     # d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class', 'pearsons', 'pearsonz', 'spearman', 'exp_ints', 'pred_ints']]
     d.reindex(columns=['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class'] + names)
