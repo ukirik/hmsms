@@ -53,8 +53,7 @@ if __name__ == '__main__':
     names = []
     for i, picklefile in enumerate(args.models):
         m = pickle.load(open(picklefile, 'rb'))
-        m.finalizeModel(alpha=256)
-        models.append(m)
+        models.append(m.finalizeModel(alpha=256))
         index = args.names[i] if args.names else f"Model_{i}"
         names.append(index)
 
