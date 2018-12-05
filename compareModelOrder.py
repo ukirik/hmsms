@@ -78,8 +78,8 @@ if __name__ == '__main__':
             preds = [getIonProbs(m, int(z), seq) for m in models]
             d = dict()
             d['exp'] = {i: ii for i, ii in zip(y_ions, y_ints)}
-            for i,ions, probs in enumerate(preds):
-                d[names[i]] = zip(ions, probs)
+            for i, (ions, probs) in enumerate(preds):
+                d[names[i]] = {ion: prob for ion, prob in zip(ions, probs)}
 
             df = pd.DataFrame.from_dict(d)
             p = df.corr(method='pearson')
@@ -104,12 +104,13 @@ if __name__ == '__main__':
 
         except ValueError as e:
             # print("Unexpected number of tokens found on line, skipping this entry!")
-            # e.args += (line,)
+            e.args += (line,)
+            # raise
             too_few_tokens += 1
             continue
 
     print(f"Number of skipped rows: \n - Too few y-ions = {too_few_y} \n - Incomplete rows = {too_few_tokens}")
     d = pd.DataFrame(results)
     # d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class', 'pearsons', 'pearsonz', 'spearman', 'exp_ints', 'pred_ints']]
-    d.reindex(columns=['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class'] + names)
+    d = d.reindex(columns=['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class'] + names)
     d.to_csv(args.outfile)
