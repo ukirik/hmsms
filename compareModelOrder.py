@@ -98,7 +98,7 @@ if __name__ == '__main__':
             }
 
             for i, n in enumerate(names):
-                res[n] = p.loc[n][0]
+                res[n] = p.loc["exp"][n]
 
             results.append(res)
 
@@ -113,4 +113,4 @@ if __name__ == '__main__':
     d = pd.DataFrame(results)
     # d = d[['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class', 'pearsons', 'pearsonz', 'spearman', 'exp_ints', 'pred_ints']]
     d = d.reindex(columns=['seq', 'charge', 'z_bin', 'peplen', 'l_bin', 'y_frac', 'a_score', 'mpt_class'] + names)
-    d.to_csv(args.outfile)
+    d.to_csv(args.outfile, index=False)
