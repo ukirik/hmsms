@@ -16,7 +16,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train HMM')
-parser.add_argument('-o', '--order', help='order, default = 2', default=2, type=int)
+parser.add_argument('-o', '--order', help='order, default = 2', default=3, type=int)
 parser.add_argument('-i', '--input', help='input_file', nargs='+', default=sys.stdin)
 parser.add_argument('--out', help='name of directory where any resultant files will be stored', default='.')
 parser.add_argument('-n', '--name', help='name of the model')
@@ -24,6 +24,7 @@ parser.add_argument('-p', '--pickle', help='print/pickle location', default='hmm
 parser.add_argument('-t', '--nthreads', help='number of threads to use', default=1, type=int)
 parser.add_argument('-m', '--use_model', help='model to use, instead of training a new one')
 parser.add_argument('-f', '--test_files', nargs='+', help='files to check corr on ')
+parser.add_argument('-s', '--single-precision', help='flag to toggle single precision floats instead of np.float64', default=False, action='store_true')
 parser.add_argument('-g', '--graph', default=False, action='store_true')
 parser.add_argument('-d', '--debug', default=False, action='store_true')
 

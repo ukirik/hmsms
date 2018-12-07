@@ -105,6 +105,7 @@ class Econtainer(object):
                  n_states=-1, # TODO why is this the default value??
                  order=0,
                  pcount=0,
+                 single_precision = False,
                  emissions='ACDEFGHIKLMNPQRSTVWY '):
 
         self.n_states = n_states
@@ -119,7 +120,7 @@ class Econtainer(object):
         self.pcount = 1 / len(emissions) if order == 0 else pcount
 
         # temporary (hopefully!) ugly hack to keep memory usage low
-        dt = np.float64 if order < 4 else np.float32
+        dt = np.float32 if single_precision else np.float64
         self.values = np.ones(self.size, dtype=dt) * self.pcount
 
     def norm(self):
@@ -226,6 +227,7 @@ class Emissions(object):
                  n_states=-1,
                  order=0,
                  charge=(2,6),
+                 single_precision = False,
                  emissions='ACDEFGHIKLMNPQRSTVWY '):
 
         self.n_states = n_states
@@ -237,7 +239,7 @@ class Emissions(object):
         for z in range(self.min_z, self.max_z + 1):
             self.np_arrays.append(list())
             for o in range(self.order+1):
-                self.np_arrays[z].append(Econtainer(n_states, order=o, emissions=emissions))
+                self.np_arrays[z].append(Econtainer(n_states, order=o, single_precision=single_precision, emissions=emissions))
 
     def norm(self, order=None):
         """

@@ -14,6 +14,7 @@ class FragmentHMM(object):
                  window=(5, 5),
                  length=(7, 27),
                  charge=(2, 4),
+                 single_precision = False,
                  alphabet='ACDEFGHIKLMNPQRSTUVWY',
                  # Adding U as a valid aa, since some human prots contain it (e.g. GPX)
                  blank_aa=' ',
@@ -54,7 +55,7 @@ class FragmentHMM(object):
 
             for ion in 'yb':
                 self.pi[ion] = IProbs(self.min_len, self.max_len, self.min_z, self.max_z, n_states, self.pcount)
-                self.E[ion] = Emissions(n_states, order=self.order, charge=charge, emissions=self.emissions_str)
+                self.E[ion] = Emissions(n_states, order=self.order, charge=charge, single_precision=single_precision, emissions=self.emissions_str)
                 self.T[ion] = OffsetList(self.min_z)
                 for i in range(self.min_z, self.max_z + 1):
                     self.T[ion].append(copy.deepcopy(self.t_init))
