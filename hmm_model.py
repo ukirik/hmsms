@@ -14,7 +14,7 @@ class FragmentHMM(object):
                  window=(5, 5),
                  length=(7, 27),
                  charge=(2, 4),
-                 single_precision = False,
+                 single_precision=False,
                  alphabet='ACDEFGHIKLMNPQRSTUVWY',
                  # Adding U as a valid aa, since some human prots contain it (e.g. GPX)
                  blank_aa=' ',

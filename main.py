@@ -138,10 +138,10 @@ def check_corr(testfiles, m, plots_g, plots_b, graph):
     return results, corr_bins
 
 
-def pool_worker(filename, doshuffle):
+def pool_worker(filename, doshuffle, single_precision):
     print(f"Processing file: {filename}")
     with open(filename, 'r') as f:
-        partial = FragmentHMM(order=args.order, indata=f, shuffle=doshuffle)
+        partial = FragmentHMM(order=args.order, indata=f, shuffle=doshuffle, single_precision=single_precision)
         return partial
 
 
@@ -155,7 +155,7 @@ def generateModel(is_mock=False, save=True):
 
         # for f in tqdm(files, desc='Reading training data', mininterval=10):
         # partial_counts = pool.map(lambda f: FragmentHMM(order=args.order, indata=f), files)
-        partial_models = pool.imap_unordered(partial(pool_worker, doshuffle=is_mock), args.input)
+        partial_models = pool.imap_unordered(partial(pool_worker, doshuffle=is_mock, single_precision=args.single_precision), args.input)
         # model = FragmentHMM.from_partials(partial_models)
         i = 0
         for m in partial_models:
