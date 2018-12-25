@@ -166,6 +166,7 @@ def x_validation(args):
         combs = itertools.combinations(range(len(files)), n)
         loop_over = combs if allcombos else range(nslices)
         for i, e in enumerate(loop_over):
+            logger.info(f'Starting iteration {i}')
             model = None
 
             if allcombos:
@@ -453,6 +454,9 @@ parser_base.set_defaults(func=baseline)
 # parser.add_argument('-d', '--debug', default=False, action='store_true')
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(process)-5d %(thread)d %(message)s')
+    logger = logging.getLogger()
     args = parser.parse_args()
     args.func(args)
 
