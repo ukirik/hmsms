@@ -150,7 +150,7 @@ def generateModel(is_mock=False, save=True):
     with ThreadPool(args.nthreads) as pool:
         from functools import partial
         mock_desc = " mock " if is_mock else " "
-        print(f"Instantiating a{mock_desc}{args.order}-order  model, "
+        print(f"Instantiating a{mock_desc}{args.order}-order model, "
               "intermediate models will be created and used as needed...")
 
         # for f in tqdm(files, desc='Reading training data', mininterval=10):

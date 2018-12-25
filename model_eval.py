@@ -38,7 +38,7 @@ def _pool_worker(filename, doshuffle):
     from hmm_model import FragmentHMM
     print(f"Processing file: {filename}")
     with open(filename, 'r') as f:
-        partial = FragmentHMM(order=args.order, indata=f, shuffle=doshuffle)
+        partial = FragmentHMM(order=args.order, indata=f, single_precision=True, shuffle=doshuffle)
         return partial
 
 
