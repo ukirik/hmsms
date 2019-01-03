@@ -15,8 +15,10 @@ import re
 import common_utils
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.ioff()
+plt.ioff() #http://matplotlib.org/faq/usage_faq.html (interactive mode)
 
 import random
 import seaborn as sns
