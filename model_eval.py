@@ -166,7 +166,7 @@ def x_validation(args):
         combs = itertools.combinations(range(len(files)), n)
         loop_over = combs if allcombos else range(nslices)
         for i, e in enumerate(loop_over):
-            logger.info(f'Starting iteration {i}')
+            logger.info(f'Starting iteration {i + 1}')
             model = None
 
             if allcombos:
@@ -182,7 +182,7 @@ def x_validation(args):
 
             if not allcombos:
                 models.append(model)
-
+            logger.info(f'--Validating...')
             df = _validate_model(model, validation_files)
             summary = df.groupby(['charge', 'pep length']).mean(numeric_only=True)
             summary_df = summary if summary_df is None else pd.concat((summary_df, summary), axis=1)
@@ -410,7 +410,7 @@ def baseline(args):
 
     ax = sns.boxplot(data=df, linewidth=2)
     ax.set_xticklabels(labels=xticklabs)
-    plt.savefig('baseline_box.pdf')
+    plt.savefig(f'{args.name}.pdf')
 
 
 parser = argparse.ArgumentParser(description='Scripts for evaluating HMM fragmentation predictor')
@@ -443,6 +443,7 @@ parser_base.add_argument('--spectra_threshold', default=100, type=int, help='min
 parser_base.add_argument('--model', help='path to model to use')
 parser_base.add_argument('--mock', help='path to corresponding mock model')
 parser_base.add_argument('--test_files', nargs='+', help='files to check corr on ')
+parser_base.add_argument('--name', help='Name for the boxplot to be generated', default='baseline_box')
 parser_base.set_defaults(func=baseline)
 
 # parser.add_argument('-n', '--name', help='name of the model')
