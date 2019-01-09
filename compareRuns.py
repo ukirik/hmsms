@@ -16,6 +16,7 @@ args = parser.parse_args()
 
 
 def getdf(filepath):
+    logger.info(f'Processing {filepath}')
     dirpath, filename = os.path.split(filepath)
     df = pd.read_csv(filepath, index_col=0)
     df['run'] = dirpath
@@ -26,11 +27,18 @@ def getdf(filepath):
 
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(process)-5d %(thread)d %(message)s')
+    logger = logging.getLogger()
+
     #frames = [getdf(f) for f in args.input]
     with multiprocessing.Pool(args.nthreads) as pool:
         frames = pool.imap_unordered(getdf, args.input)
 
+    logger.info(f'Merging all dataframes...')
     df = pd.concat(frames)
+    logger.info(f'Merging complete! Printing to file {args.name}')
     df.run = df.run.astype('category')
     print(df.info())
     df.to_csv(args.name)
+
