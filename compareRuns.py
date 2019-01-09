@@ -11,6 +11,7 @@ parser.add_argument('-i', '--input', help='input_files', nargs='+', required=Tru
 parser.add_argument('--out', help='name of directory where any resultant files will be stored', default='.')
 parser.add_argument('-t', '--nthreads', help='number of threads to use', default=1, type=int)
 parser.add_argument('-g', '--graph', default=False, action='store_true')
+parser.add_argument('-n', '--name', default='merged_out.csv', help='name of the output file')
 args = parser.parse_args()
 
 
@@ -32,3 +33,4 @@ if __name__ == '__main__':
     df = pd.concat(frames)
     df.run = df.run.astype('category')
     print(df.info())
+    df.to_csv(args.name)
