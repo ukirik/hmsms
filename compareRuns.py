@@ -31,14 +31,14 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(process)-5d %(thread)d %(message)s')
     logger = logging.getLogger()
 
-    #frames = [getdf(f) for f in args.input]
+    logger.info(f'Following files will be processed and merged:\n{args.input}')
     with multiprocessing.Pool(args.nthreads) as pool:
         frames = pool.imap_unordered(getdf, args.input)
 
-    logger.info(f'Merging all dataframes...')
-    df = pd.concat(frames)
-    logger.info(f'Merging complete! Printing to file {args.name}')
-    df.run = df.run.astype('category')
-    print(df.info())
-    df.to_csv(args.name)
+        logger.info(f'Merging all dataframes...')
+        df = pd.concat(frames)
+        logger.info(f'Merging complete! Printing to file {args.name}')
+        df.run = df.run.astype('category')
+        print(df.info())
+        df.to_csv(args.name)
 
