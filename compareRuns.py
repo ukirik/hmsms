@@ -30,4 +30,5 @@ if __name__ == '__main__':
         frames = pool.imap_unordered(getdf, args.input)
 
     df = pd.concat(frames)
+    df.run = df.run.astype('category')
     print(df.info())

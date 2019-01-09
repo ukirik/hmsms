@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train HMM')
-parser.add_argument('-o', '--order', help='order, default = 2', default=2, type=int)
+parser.add_argument('-o', '--order', help='order, default = 2', default=3, type=int)
 parser.add_argument('-i', '--input', help='input_file', nargs='+', default=sys.stdin)
 parser.add_argument('--out', help='name of directory where any resultant files will be stored', default='.')
 parser.add_argument('-n', '--name', help='name of the model')
