@@ -27,7 +27,7 @@ def getdf(filepath):
 
 if __name__ == '__main__':
     #frames = [getdf(f) for f in args.input]
-    with multiprocessing.ThreadPool(args.nthreads) as pool:
+    with multiprocessing.Pool(args.nthreads) as pool:
         frames = pool.imap_unordered(getdf, args.input)
 
     df = pd.concat(frames)
