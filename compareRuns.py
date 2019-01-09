@@ -22,7 +22,7 @@ def getdf(filepath):
     df['run'] = dirpath
     df['z_bin'] = df['z_bin'].astype('category')
     df['l_bin'] = df['l_bin'].astype('category')
-    df['mpt.class'] = df['mpt.class'].astype('category')
+    df['mpt_class'] = df['mpt_class'].astype('category')
     return df
 
 
