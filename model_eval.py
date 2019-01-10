@@ -344,7 +344,7 @@ def baseline(args):
         pepdf.fillna(0, inplace=True)
         corr = pepdf.corr(method='pearson')
         p = corr.iat[0, 1]
-        corrs['baseline'].append(p)
+        corrs['experimental'].append(p)
 
     print(f'finished parsing baseline data...')
 
