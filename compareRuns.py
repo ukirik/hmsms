@@ -20,9 +20,6 @@ def getdf(filepath):
     dirpath, filename = os.path.split(filepath)
     df = pd.read_csv(filepath, index_col=0)
     df['run'] = dirpath
-    df['z_bin'] = df['z_bin'].astype('category')
-    df['l_bin'] = df['l_bin'].astype('category')
-    df['mpt_class'] = df['mpt_class'].astype('category')
     return df
 
 
@@ -38,7 +35,10 @@ if __name__ == '__main__':
         logger.info(f'Merging all dataframes...')
         df = pd.concat(frames)
         logger.info(f'Merging complete! Printing to file {args.name}')
-        df.run = df.run.astype('category')
+        df['z_bin'] = df['z_bin'].astype('category')
+        df['l_bin'] = df['l_bin'].astype('category')
+        df['mpt_class'] = df['mpt_class'].astype('category')
+        df['run'] = df['run'].astype('category')
         print(df.info())
         df.to_csv(args.name)
 

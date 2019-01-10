@@ -403,7 +403,7 @@ def baseline(args):
 
     df = pd.DataFrame.from_dict(corrs, orient='index')
     df = df.transpose()
-    df = df.reindex(columns=['baseline', 'model', 'mock'])
+    df = df.reindex(columns=['experimental', 'model', 'mock'])
     # cols = sorted(df.columns.tolist())
     # df = df[cols]
 
