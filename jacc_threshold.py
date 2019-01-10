@@ -163,7 +163,7 @@ def baseline():
         temp['seq'] = seq
         temp['charge'] = _bin_z(z)
         temp['peplen'] = _getbin(len(seq))
-        temp['model'] = 'baseline'
+        temp['model'] = 'experimental'
 
         for i, t in enumerate(thresholds):
             temp[f'{t:.2f}'] = base_j[i]
@@ -181,7 +181,8 @@ parser.add_argument('--mock', help='path to corresponding mock model')
 parser.add_argument('--train_data', help='files containing data used for training, for baseline estimation ')
 parser.add_argument('--spectra_threshold', default=100, type=int, help='min nbr of spectra to consider')
 parser.add_argument('--test_files', nargs='+', help='files to check corr on ')
-parser.add_argument('-n', '--max_spectra', type=int, default=-1, help='number of predictions to run')
+parser.add_argument('--max_spectra', type=int, default=-1, help='number of predictions to run')
+parser.add_argument('--name', default='jacc-nanmean-ci99.pdf', help='name of the plot')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -265,4 +266,4 @@ if __name__ == '__main__':
         ax.fig.suptitle("")
         ax.despine(offset=10)
         plt.legend(loc='best')
-        ax.savefig('jacc_nanmean_ci99.pdf')
+        ax.savefig(args.name)

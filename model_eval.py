@@ -437,7 +437,7 @@ parser_xval.add_argument('--allcombos', help='whether or not to check all combin
 parser_xval.set_defaults(func=x_validation)
 
 
-# create the parser for the "mock_model" command
+# create the parser for the "baseline" command
 parser_base = subparsers.add_parser('baseline', help='evaluates model performance by comparing bsaeline variation in spectra')
 parser_base.add_argument('--data', help='entire knowledgebase of spectra')
 parser_base.add_argument('--max_spectra', default=-1, type=int, help='max number of spectra to process')
