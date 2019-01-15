@@ -1,6 +1,7 @@
 import argparse
 import collections
 import pickle
+import re
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -126,7 +127,7 @@ if __name__ == '__main__':
 
     picklefile = open(args.model, 'rb')
     model = pickle.load(picklefile)
-    model = model.finalizeModel(alpha=128)
+    model = model.finalizeModel(alpha=args.alpha)
 
     dd = {}
     counter = 0
@@ -157,9 +158,6 @@ if __name__ == '__main__':
                 # print(seq)
                 continue
 
-            #             print('='*40)
-            #             print(f'Processing predictions for {seq} +{z}')
-
             ions, probs = model.calc_fragments(charge=int(z), seq=seq, ion_type='y', use_yfrac=False)
             ions2, preds = get_ms2pip_pred(ms2pip_df, f'{seq}_{z}')
 
@@ -171,10 +169,6 @@ if __name__ == '__main__':
 
             df = pd.DataFrame.from_dict(d)
             corr = df.corr(method='pearson')
-
-            #             print(df)
-            #             print()
-            #             print(corr)
 
             r_hmsms = corr.iat[0, 1]
             r_ms2pip = corr.iat[0, 2]
@@ -193,10 +187,6 @@ if __name__ == '__main__':
                 print(seq, ions2, preds)
                 rej_ms2pip += 1
                 j_ms2pip = np.nan
-
-            #             print()
-            #             print(f'Jaccard: HMSMS={j_hmsms}, MS2PIP={j_ms2pip}')
-            #             input("enter to continue...")
 
             dd[counter] = {
                 'seq': seq,
