@@ -92,11 +92,11 @@ The emission matrix is more difficult to visualize since for several reasons:
 ### 3. How to use the code
 The code provided essentially of proof-of-principle, in the sense that it's not entirely clean or optimized. That being said, they are functional and relatively easy to use. Below is the general workflow required to train a model:
 
-1. Get some data to train the model on, and parse the fragment intensities. Currently we only provide a parser for working with Andromeda results, which should be familiar to MQ users. What you need is the msms.txt file from the MQ results. Consider how many output files you want to generate, this is useful for multithreading, as well as doing train-test-validate schemes:
+1. Get some data to train the model on, and parse the fragment intensities. Currently we only provide a parser for working with Andromeda results, which should be familiar to MQ users. What you need is the `msms.txt` file from the MQ results. Consider how many output files you want to generate, this is useful for multithreading, as well as doing train-test-validate schemes:
 
        python hmsms/parseMQ.py -f msms.txt -v -n <nbr_of_output_files>
 
-    If the msms.txt file is really large, you might want to filter and pre-sort the file to speed up parsing, and in that case use `--sorted` flag to indicate that the file is pre-sorted (according to andromeda score)
+    If the msms.txt file is really large, you might want to filter and pre-sort the file (e.g. by using `gcut` and `gsort` command line tools) to speed up parsing, and in that case use `--sorted` flag to indicate that the file is pre-sorted (according to andromeda score)
 
        python ../hmsms/parseMQ.py -f msms.txt -v -n <nbr_of_files> [--sorted]
 
@@ -124,4 +124,4 @@ There are several shortcomings of the current implementation which are listed be
 
 - For real-life use of this module, a rewrite in C or Fortran is likely to give a considerable performance boost, even though the numeric aspects of the code are all in Numpy.
 
-- There are multiple python files for different types of comparisons, while functional as they are, there is significant overlap between these modules. A cleanup would be a nice improvement in due time. 
+- There are multiple python files for different types of comparisons, while functional as they are, there is significant overlap between these modules. A cleanup would be a nice improvement in due time.
