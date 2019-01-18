@@ -96,11 +96,11 @@ The code provided essentially of proof-of-principle, in the sense that it's not 
 
        python hmsms/parseMQ.py -f msms.txt -v -n <nbr_of_output_files>
 
-    If the msms.txt file is really large, you might want to filter and pre-sort the file (e.g. by using `gcut` and `gsort` command line tools) to speed up parsing, and in that case use `--sorted` flag to indicate that the file is pre-sorted (according to andromeda score)
+    If the msms.txt file is really large, you might want to filter and pre-sort the file (e.g. by using `gcut` and `gsort` command line tools) to speed up parsing, and in that case use the optional `--sorted` flag to indicate that the file is pre-sorted (according to andromeda score)
 
        python ../hmsms/parseMQ.py -f msms.txt -v -n <nbr_of_files> [--sorted]
 
-    You can also specify which spectra to be extracted for each (peptide, charge state) pair, in case there are more than one available (majority of the peptides have more than one spectra) by using the `-s` flag: valid options are best scoring spectrum, median scoring spectrum, randomly chosen spectrum, or a composite average calculated from all available spectra for that (peptide, charge state)
+    You can also specify which spectra to be extracted for each (peptide, charge state) pair, in case there are more than one available (majority of the peptides have more than one spectra) by using the optional `-s` flag: valid options are best scoring spectrum, median scoring spectrum, randomly chosen spectrum, or a composite average calculated from all available spectra for that (peptide, charge state)
 
         python ../hmsms/parseMQ.py -f msms.txt -v -n <nbr_of_files> [-s best|med|rand|ave]
 
