@@ -3,6 +3,7 @@ import common_utils
 import ms_utils
 import argparse
 import sys
+import os
 import pickle
 import itertools
 import numpy as np
@@ -11,7 +12,7 @@ import matplotlib
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-#from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train HMM')
@@ -56,7 +57,7 @@ def plot2File(df, file, seq, z, score, p, s):
     plt.close()
 
 
-def check_corr(testfiles, m):
+def check_corr(testfiles, m, plots_g, plots_b, graph):
     np.seterr(invalid='ignore')
     model = m.finalizeModel(alpha=256)
     results = []
@@ -102,6 +103,13 @@ def check_corr(testfiles, m):
                     p = df.corr(method='pearson').iat[0, 1]
                     s = df.corr(method='spearman').iat[0, 1]
                     p_z = df.fillna(0).corr(method='pearson').iat[0, 1]
+
+                    if graph:
+                        if p < 0.2:
+                            plot2File(df, plots_b, seq, z, score, p, s)
+                        elif p > 0.8:
+                            plot2File(df, plots_g, seq, z, score, p, s)
+
 
                     res = {
                         'seq': seq,
@@ -209,9 +217,12 @@ if __name__ == '__main__':
             import os
             os.makedirs(args.out, exist_ok=True)
 
-        df = check_corr(args.test_files, model)
-        df.to_csv(path_or_buf=os.path.join(args.out, "pred_results.csv"))
-        print(f'Pearsons correlation: mean={df["pearsons"].mean()}, median={df["pearsons"].median()}')
-        print(f'Pearsons corr (zero): mean={df["pearsonz"].mean()}, median={df["pearsonz"].median()}')
-        print(f'Pearsons correlation: mean={df["spearman"].mean()}, median={df["spearman"].median()}')
+        with PdfPages(os.path.join(args.out, "preds_high.pdf")) as g, \
+                PdfPages(os.path.join(args.out, "preds_low.pdf")) as b:
+
+            df = check_corr(args.test_files, model, g, b, args.graph)
+            df.to_csv(path_or_buf=os.path.join(args.out, "pred_results.csv"))
+            print(f'Pearsons correlation: mean={df["pearsons"].mean()}, median={df["pearsons"].median()}')
+            print(f'Pearsons corr (zero): mean={df["pearsonz"].mean()}, median={df["pearsonz"].median()}')
+            print(f'Pearsons correlation: mean={df["spearman"].mean()}, median={df["spearman"].median()}')
 
