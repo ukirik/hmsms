@@ -105,9 +105,9 @@ def check_corr(testfiles, m, plots_g, plots_b, graph):
                     p_z = df.fillna(0).corr(method='pearson').iat[0, 1]
 
                     if graph:
-                        if p < 0.2:
+                        if p < 0.1:
                             plot2File(df, plots_b, seq, z, score, p, s)
-                        elif p > 0.8:
+                        elif p > 0.9:
                             plot2File(df, plots_g, seq, z, score, p, s)
 
 
