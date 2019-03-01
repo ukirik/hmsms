@@ -31,8 +31,8 @@ args = parser.parse_args()
 
 
 def annotate(row, ax):
-    #ax.annotate(row.name, (row.exp, row.model),
-    ax.annotate(row.Index, (row.exp, row.model),
+    ax.annotate(row.name, (row.exp, row.model),
+    # ax.annotate(row.Index, (row.exp, row.model),
                 xytext=(10, 20), textcoords='offset points',
                 arrowprops=dict(arrowstyle="-", connectionstyle="arc,angleA=180,armA=10"),
                 family='sans-serif', fontsize=8, color='darkslategrey')
