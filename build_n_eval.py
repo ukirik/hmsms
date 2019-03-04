@@ -25,6 +25,7 @@ parser.add_argument('-t', '--nthreads', help='number of threads to use', default
 parser.add_argument('-m', '--use_model', help='model to use, instead of training a new one')
 parser.add_argument('-f', '--test_files', nargs='+', help='files to check corr on ')
 parser.add_argument('-g', '--graph', default=False, action='store_true')
+parser.add_argument('--graph_threshold', default=0.9, type=float, help='threshold for graphing predictions')
 parser.add_argument('-d', '--debug', default=False, action='store_true')
 
 args = parser.parse_args()
@@ -105,9 +106,9 @@ def check_corr(testfiles, m, plots_g, plots_b, graph):
                     p_z = df.fillna(0).corr(method='pearson').iat[0, 1]
 
                     if graph:
-                        if p < 0.1:
+                        if p < 1 - args.graph_threshold:
                             plot2File(df, plots_b, seq, z, score, p, s)
-                        elif p > 0.9:
+                        elif p > args.graph_threshold:
                             plot2File(df, plots_g, seq, z, score, p, s)
 
 
