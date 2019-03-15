@@ -262,7 +262,7 @@ if __name__ == '__main__':
         plt.ioff()
         from numpy import nanmean
 
-        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, ci=99, legend=False, estimator=nanmean)
+        ax = sns.factorplot(x="threshold", y="value", hue="model", aspect=2, data=df_long, ci=99, legend=False, estimator=nanmean)
         ax.fig.suptitle("")
         ax.despine(offset=10)
         plt.tick_params(labelsize=12)
