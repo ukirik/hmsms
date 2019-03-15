@@ -198,8 +198,8 @@ if __name__ == '__main__':
 
         np.seterr(invalid='ignore')
 
-        model = model.finalizeModel(alpha=250)
-        mockmodel = mockmodel.finalizeModel(alpha=250)
+        model = model.finalizeModel(alpha=128)
+        mockmodel = mockmodel.finalizeModel(alpha=128)
         nlines = args.max_spectra if args.max_spectra > 0 else None
         dd = baseline()
         counter = len(dd.keys())
@@ -262,8 +262,10 @@ if __name__ == '__main__':
         plt.ioff()
         from numpy import nanmean
 
-        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, size=12, ci=99, legend=False, estimator=nanmean)
+        ax = sns.factorplot(x="threshold", y="value", hue="model", data=df_long, ci=99, legend=False, estimator=nanmean)
         ax.fig.suptitle("")
         ax.despine(offset=10)
         plt.legend(loc='best')
+        plt.xticks(rotation=30)
+        plt.ylabel("Jaccard's similarity")
         ax.savefig(args.name)
