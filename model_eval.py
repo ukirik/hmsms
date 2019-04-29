@@ -315,9 +315,11 @@ def baseline(args):
             return parser
 
     import tqdm
+    from collections import defaultdict
 
-    corrs = collections.defaultdict(list)
+    corrs = defaultdict(lambda: defaultdict(list))
     parser = _getParser(args.data)
+    bin_z = lambda x: x if int(x) < 4 else '4+'
 
     t = args.spectra_threshold
     baseline_spectra = [key for key in parser.getKeys() if len(list(parser.getDataAsTuple(key))) > t]
@@ -344,7 +346,7 @@ def baseline(args):
         pepdf.fillna(0, inplace=True)
         corr = pepdf.corr(method='pearson')
         p = corr.iat[0, 1]
-        corrs['experimental'].append(p)
+        corrs['experimental'][bin_z(charge)].append(p)
 
     print(f'finished parsing baseline data...')
 
@@ -393,8 +395,8 @@ def baseline(args):
                 r_mock = corr.iat[0, 1]
                 r_mode = corr.iat[0, 2]
 
-                corrs['mock'].append(r_mock)
-                corrs['model'].append(r_mode)
+                corrs['mock'][bin_z(z)].append(r_mock)
+                corrs['model'][bin_z(z)].append(r_mode)
 
             except ValueError as e:
                 print("Unexpected number of tokens found on line!")
@@ -438,7 +440,7 @@ parser_xval.set_defaults(func=x_validation)
 
 
 # create the parser for the "baseline" command
-parser_base = subparsers.add_parser('baseline', help='evaluates model performance by comparing bsaeline variation in spectra')
+parser_base = subparsers.add_parser('baseline', help='evaluates model performance by comparing baseline variation in spectra')
 parser_base.add_argument('--data', help='entire knowledgebase of spectra')
 parser_base.add_argument('--max_spectra', default=-1, type=int, help='max number of spectra to process')
 parser_base.add_argument('--spectra_threshold', default=100, type=int, help='min nbr of spectra to consider')
