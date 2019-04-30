@@ -317,9 +317,9 @@ def baseline(args):
     import tqdm
     from collections import defaultdict
 
-    corrs = defaultdict(lambda: defaultdict(list))
+    corrs = [] # defaultdict(lambda: defaultdict(list))
     parser = _getParser(args.data)
-    bin_z = lambda x: x if int(x) < 4 else '4+'
+    bin_z = lambda x: str(x) if int(x) < 4 else '4+'
 
     t = args.spectra_threshold
     baseline_spectra = [key for key in parser.getKeys() if len(list(parser.getDataAsTuple(key))) > t]
@@ -346,7 +346,12 @@ def baseline(args):
         pepdf.fillna(0, inplace=True)
         corr = pepdf.corr(method='pearson')
         p = corr.iat[0, 1]
-        corrs['experimental'][bin_z(charge)].append(p)
+        corrs.append({
+            'charge': bin_z(charge),
+            'corr': p,
+            'origin': 'experimental'
+        })
+        # corrs['experimental'][bin_z(charge)].append(p)
 
     print(f'finished parsing baseline data...')
 
@@ -392,27 +397,39 @@ def baseline(args):
                 # df.reindex(sorted(df.index,key=lambda x: re.sub('[A-z]','',x)))
                 # df.fillna(0, inplace=True) # TODO: this might be misleading
                 corr = df.corr(method='pearson')
-                r_mock = corr.iat[0, 1]
-                r_mode = corr.iat[0, 2]
+                r_mock = corr.loc['exp']['mock']
+                r_mode = corr.loc['exp']['model']
 
-                corrs['mock'][bin_z(z)].append(r_mock)
-                corrs['model'][bin_z(z)].append(r_mode)
+                # corrs['mock'][bin_z(z)].append(r_mock)
+                corrs.append({
+                    'charge': bin_z(z),
+                    'corr': r_mock,
+                    'origin': 'mock'
+                })
+                # corrs['model'][bin_z(z)].append(r_mode)
+                corrs.append({
+                    'charge': bin_z(z),
+                    'corr': r_mode,
+                    'origin': 'model'
+                })
 
             except ValueError as e:
                 print("Unexpected number of tokens found on line!")
                 e.args += (line,)
                 raise
 
-    df = pd.DataFrame.from_dict(corrs, orient='index')
-    df = df.transpose()
-    df = df.reindex(columns=['experimental', 'model', 'mock'])
+    # df = pd.DataFrame.from_dict(corrs, orient='index')
+    df = pd.DataFrame.from_records(corrs)
+    # df = df.reindex(columns=['experimental', 'model', 'mock'])
     # cols = sorted(df.columns.tolist())
     # df = df[cols]
 
-    nvals = df.count()
-    xticklabs = [f'{z}\n(n={nvals[i]})' for i, z in enumerate(df.columns)]
+    nvals = df.groupby('origin')['corr'].count()
+    xticklabs = [f'{i}\n(n={val})' for i, val in nvals.iteritems()]
+    # xticklabs = [f'{z}\n(n={nvals[i]})' for i, z in enumerate(df.columns)]
 
-    ax = sns.boxplot(data=df, linewidth=2)
+    # ax = sns.boxplot(data=df, linewidth=2)
+    ax = sns.catplot(data=df, x='origin', y='corr', hue="charge", kind="box")
     ax.set_xticklabels(labels=xticklabs)
     plt.savefig(f'{args.name}.pdf')
 
